@@ -22,4 +22,4 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=KRishika01_SE_MP1
-            -Dsonar.organization=KRishika01
+            -Dsonar.organization=krishika01
