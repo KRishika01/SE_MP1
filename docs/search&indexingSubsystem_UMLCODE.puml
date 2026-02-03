@@ -1,0 +1,492 @@
+@startuml
+title Apache Roller - Search and Indexing Subsystem
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+top to bottom direction
+
+' =========================================================
+' INTERFACES
+' =========================================================
+interface IndexManager {
+  + initialize() : void
+  + shutdown() : void
+  + release() : void
+  + isInconsistentAtStartup() : boolean
+  + addEntryIndexOperation(entry : WeblogEntry) : void
+  + addEntryReIndexOperation(entry : WeblogEntry) : void
+  + removeEntryIndexOperation(entry : WeblogEntry) : void
+  + rebuildWeblogIndex(weblog : Weblog) : void
+  + rebuildWeblogIndex() : void
+  + removeWeblogIndex(weblog : Weblog) : void
+  + search(term : String, weblogHandle : String, category : String,
+           locale : String, pageNum : int, entryCount : int,
+           urlStrategy : URLStrategy) : SearchResultList
+}
+
+interface Runnable {
+}
+
+interface WeblogEntriesPager {
+}
+
+' =========================================================
+' MAIN INDEX MANAGER
+' =========================================================
+class LuceneIndexManager {
+  - reader : IndexReader
+  - roller : Weblogger <<final>>
+  - searchEnabled : boolean
+  - indexDir : String <<final>>
+  - indexConsistencyMarker : File <<final>>
+  - inconsistentAtStartup : boolean
+  - rwl : ReadWriteLock <<final>>
+  - {static} logger : Log
+
+  + LuceneIndexManager(roller : Weblogger)
+  + initialize() : void
+  + release() : void
+  + shutdown() : void
+  + rebuildWeblogIndex() : void
+  + rebuildWeblogIndex(website : Weblog) : void
+  + removeWeblogIndex(website : Weblog) : void
+  + addEntryIndexOperation(entry : WeblogEntry) : void
+  + addEntryReIndexOperation(entry : WeblogEntry) : void
+  + removeEntryIndexOperation(entry : WeblogEntry) : void
+  + search(term : String, weblogHandle : String, category : String,
+           locale : String, pageNum : int, entryCount : int,
+           urlStrategy : URLStrategy) : SearchResultList
+  + isInconsistentAtStartup() : boolean
+  + getReadWriteLock() : ReadWriteLock
+  + resetSharedReader() : void
+  + getSharedIndexReader() : IndexReader
+  + getIndexDirectory() : Directory
+  - indexExists() : boolean
+  - deleteIndex() : void
+  - createIndex(dir : Directory) : void
+  + {static} getAnalyzer() : Analyzer
+  - {static} instantiateAnalyzer() : Analyzer
+  - {static} instantiateDefaultAnalyzer() : Analyzer
+  - scheduleIndexOperation(op : IndexOperation) : void
+  - executeIndexOperationNow(op : IndexOperation) : void
+  + {static} convertHitsToEntryList(
+      hits : ScoreDoc[],
+      search : SearchOperation,
+      pageNum : int,
+      entryCount : int,
+      weblogHandle : String,
+      websiteSpecificSearch : boolean,
+      urlStrategy : URLStrategy
+    ) : SearchResultList
+}
+
+' =========================================================
+' ABSTRACT OPERATIONS
+' =========================================================
+abstract class IndexOperation {
+  - {static} logger : Log
+  # manager : LuceneIndexManager
+  - writer : IndexWriter
+
+  + IndexOperation(manager : LuceneIndexManager)
+  # getDocument(data : WeblogEntry) : Document
+  # beginWriting() : IndexWriter
+  # endWriting() : void
+  + run() : void
+  # doRun() : void
+}
+
+abstract class WriteToIndexOperation {
+  - {static} logger : Log
+  + WriteToIndexOperation(mgr : LuceneIndexManager)
+  + run() : void
+}
+
+abstract class ReadFromIndexOperation {
+  - {static} logger : Log
+  + ReadFromIndexOperation(mgr : LuceneIndexManager)
+  + run() : void
+}
+
+' =========================================================
+' CONCRETE WRITE OPERATIONS
+' =========================================================
+class AddEntryOperation {
+  - {static} logger : Log
+  - data : WeblogEntry
+  - roller : Weblogger
+
+  + AddEntryOperation(roller : Weblogger, mgr : LuceneIndexManager, data : WeblogEntry)
+  + doRun() : void
+}
+
+class ReIndexEntryOperation {
+  - {static} logger : Log
+  - data : WeblogEntry
+  - roller : Weblogger
+
+  + ReIndexEntryOperation(roller : Weblogger, mgr : LuceneIndexManager, data : WeblogEntry)
+  + doRun() : void
+}
+
+class RemoveEntryOperation {
+  - {static} logger : Log
+  - entry : WeblogEntry
+  - roller : Weblogger
+
+  + RemoveEntryOperation(roller : Weblogger, mgr : LuceneIndexManager, entry : WeblogEntry)
+  + doRun() : void
+}
+
+class RebuildWebsiteIndexOperation {
+  - {static} logger : Log
+  - website : Weblog
+  - roller : Weblogger
+
+  + RebuildWebsiteIndexOperation(roller : Weblogger, mgr : LuceneIndexManager, website : Weblog)
+  + doRun() : void
+}
+
+class RemoveWebsiteIndexOperation {
+  - {static} logger : Log
+  - website : Weblog
+  - roller : Weblogger
+
+  + RemoveWebsiteIndexOperation(roller : Weblogger, mgr : LuceneIndexManager, website : Weblog)
+  + doRun() : void
+}
+
+' =========================================================
+' CONCRETE READ OPERATIONS
+' =========================================================
+class SearchOperation {
+  - {static} logger : Log
+  - {static} SEARCH_FIELDS : String[]
+  - {static} SORTER : Sort
+  - searcher : IndexSearcher
+  - searchresults : TopFieldDocs
+  - term : String
+  - weblogHandle : String
+  - category : String
+  - locale : String
+  - parseError : String
+
+  + SearchOperation(mgr : IndexManager)
+  + doRun() : void
+  + setTerm(term : String) : void
+  + setWeblogHandle(weblogHandle : String) : void
+  + setCategory(category : String) : void
+  + setLocale(locale : String) : void
+  + setSearcher(searcher : IndexSearcher) : void
+  + getSearcher() : IndexSearcher
+  + getResults() : TopFieldDocs
+  + getResultsCount() : int
+  + getParseError() : String
+}
+
+' =========================================================
+' RESULT CONTAINERS
+' =========================================================
+class SearchResultMap {
+  ~ limit : int
+  ~ offset : int
+  ~ categories : Set<String>
+  ~ results : Map<Date, Set<WeblogEntryWrapper>>
+
+  + SearchResultMap(results : Map, categories : Set, limit : int, offset : int)
+  + getLimit() : int
+  + getOffset() : int
+  + getResults() : Map
+  + getCategories() : Set
+}
+
+class SearchResultList {
+  ~ limit : int
+  ~ offset : int
+  ~ categories : Set<String>
+  ~ results : List<WeblogEntryWrapper>
+
+  + SearchResultList(results : List, categories : Set, limit : int, offset : int)
+  + getLimit() : int
+  + getOffset() : int
+  + getResults() : List
+  + getCategories() : Set
+}
+
+' =========================================================
+' CONSTANTS & UTILITIES
+' =========================================================
+class FieldConstants <<final>> {
+  + {static} ANCHOR : String
+  + {static} UPDATED : String
+  + {static} ID : String
+  + {static} USERNAME : String
+  + {static} CATEGORY : String
+  + {static} TITLE : String
+  + {static} PUBLISHED : String
+  + {static} CONTENT : String
+  + {static} CONTENT_STORED : String
+  + {static} C_CONTENT : String
+  + {static} C_EMAIL : String
+  + {static} C_NAME : String
+  + {static} CONSTANT : String
+  + {static} CONSTANT_V : String
+  + {static} WEBSITE_HANDLE : String
+  + {static} LOCALE : String
+}
+
+
+class IndexUtil <<final>> {
+  + {static} getTerm(field : String, input : String) : Term
+}
+
+
+' =========================================================
+' SERVLETS
+' =========================================================
+class SearchServlet {
+  - {static} serialVersionUID : long
+  - {static} log : Log
+  ~ themeReload : Boolean
+
+  + init(servletConfig : ServletConfig) : void
+  + doGet(request : HttpServletRequest,
+          response : HttpServletResponse) : void
+}
+
+class OpenSearchServlet {
+  + doGet(request : HttpServletRequest,
+          response : HttpServletResponse) : void
+}
+
+' =========================================================
+' REQUEST HANDLING
+' =========================================================
+class WeblogSearchRequest {
+  - {static} log : Log
+  + {static} SEARCH_SERVLET : String
+  - query : String
+  - pageNum : int
+  - weblogCategoryName : String
+  - weblogCategory : WeblogCategory
+
+  + WeblogSearchRequest()
+  + WeblogSearchRequest(request : HttpServletRequest)
+  + getQuery() : String
+  + getPageNum() : int
+  + getWeblogCategoryName() : String
+  + getWeblogCategory() : WeblogCategory
+  + setQuery(query : String) : void
+  + setPageNum(pageNum : int) : void
+  + setWeblogCategoryName(name : String) : void
+  + setWeblogCategory(cat : WeblogCategory) : void
+}
+
+' =========================================================
+' MODELS
+' =========================================================
+class SearchResultsModel {
+  + {static} RESULTS_PER_PAGE : int
+  ~ searchRequest : WeblogSearchRequest
+  - urlStrategy : URLStrategy
+  - results : Map<Date, Set<WeblogEntryWrapper>>
+  - pager : SearchResultsPager
+  - hits : int
+  - offset : int
+  - limit : int
+  - categories : Set<String>
+  - errorMessage : String
+
+  + init(initData : Map<String, Object>) : void
+  - addEntryToResults(results : Map<Date, Set<WeblogEntryWrapper>>,
+                      entry : WeblogEntryWrapper) : void
+  + isSearchResults() : boolean
+  + getWeblogEntriesPager() : WeblogEntriesPager
+  + getWeblogEntriesPager(category : String) : WeblogEntriesPager
+  + getWeblogCategory() : WeblogCategoryWrapper
+  + getTerm() : String
+  + getRawTerm() : String
+  + getHits() : int
+  + getOffset() : int
+  + getLimit() : int
+  + getResults() : Map<Date, Set<WeblogEntryWrapper>>
+  + getCategories() : Set<String>
+  + getErrorMessage() : String
+  + getWeblogCategoryName() : String
+}
+
+' =========================================================
+' PAGERS
+' =========================================================
+class SearchResultsPager {
+  ~ messageUtils : I18nMessages
+  ~ urlStrategy : URLStrategy
+  - entries : Map<Date, Set<WeblogEntryWrapper>>
+  - weblog : Weblog
+  - locale : String
+  - query : String
+  - category : String
+  - page : int
+  - moreResults : boolean
+
+  + SearchResultsPager(strat : URLStrategy,
+                       searchRequest : WeblogSearchRequest,
+                       entries : Map<Date, Set<WeblogEntryWrapper>>,
+                       more : boolean)
+  + getEntries() : Map<Date, Set<WeblogEntryWrapper>>
+  + getHomeLink() : String
+  + getHomeName() : String
+  + getNextLink() : String
+  + getNextName() : String
+  + getPrevLink() : String
+  + getPrevName() : String
+  + getNextCollectionLink() : String
+  + getNextCollectionName() : String
+  + getPrevCollectionLink() : String
+  + getPrevCollectionName() : String
+}
+
+class SearchResultsFeedPager {
+  ~ messageUtils : I18nMessages
+  - entries : List<WeblogEntryWrapper>
+  - weblog : Weblog
+  - moreResults : boolean
+  - feedRequest : WeblogFeedRequest
+  - url : String
+
+  + SearchResultsFeedPager(strat : URLStrategy,
+                           baseUrl : String,
+                           pageNum : int,
+                           feedRequest : WeblogFeedRequest,
+                           entries : List<WeblogEntryWrapper>,
+                           more : boolean)
+  + getItems() : List<WeblogEntryWrapper>
+  + hasMoreItems() : boolean
+  + getHomeLink() : String
+  + getHomeName() : String
+  # createURL(url : String, params : Map<String, String>) : String
+  + getUrl() : String
+}
+
+' =========================================================
+' LAYOUT HINTS - Arrange classes horizontally in groups
+' =========================================================
+IndexManager -[hidden]right- Runnable
+Runnable -[hidden]right- WeblogEntriesPager
+
+WriteToIndexOperation -[hidden]right- ReadFromIndexOperation
+
+AddEntryOperation -[hidden]right- ReIndexEntryOperation
+ReIndexEntryOperation -[hidden]right- RemoveEntryOperation
+RemoveEntryOperation -[hidden]right- RebuildWebsiteIndexOperation
+RebuildWebsiteIndexOperation -[hidden]right- RemoveWebsiteIndexOperation
+
+SearchResultMap -[hidden]right- SearchResultList
+SearchResultList -[hidden]right- FieldConstants
+
+SearchServlet -[hidden]right- OpenSearchServlet
+
+SearchResultsPager -[hidden]right- SearchResultsFeedPager
+
+' =========================================================
+' INHERITANCE & IMPLEMENTATION
+' =========================================================
+LuceneIndexManager ..|> IndexManager
+IndexOperation ..|> Runnable
+SearchResultsPager ..|> WeblogEntriesPager
+
+WriteToIndexOperation --|> IndexOperation
+ReadFromIndexOperation --|> IndexOperation
+
+AddEntryOperation --|> WriteToIndexOperation
+ReIndexEntryOperation --|> WriteToIndexOperation
+RemoveEntryOperation --|> WriteToIndexOperation
+RebuildWebsiteIndexOperation --|> WriteToIndexOperation
+RemoveWebsiteIndexOperation --|> WriteToIndexOperation
+
+SearchOperation --|> ReadFromIndexOperation
+SearchServlet --|> HttpServlet
+WeblogSearchRequest --|> WeblogRequest
+OpenSearchServlet --|> HttpServlet
+SearchResultsModel --|> PageModel
+SearchResultsFeedPager --|> AbstractPager
+
+' =========================================================
+' COMPOSITION (Strong Ownership)
+' =========================================================
+LuceneIndexManager *-- Weblogger
+LuceneIndexManager *-- ReadWriteLock
+LuceneIndexManager *-- File
+
+IndexOperation *-- LuceneIndexManager
+
+SearchResultList *-- WeblogEntryWrapper : results
+SearchResultMap *-- WeblogEntryWrapper : results
+
+SearchResultsModel *-- WeblogSearchRequest
+SearchResultsModel *-- SearchResultsPager
+
+' =========================================================
+' AGGREGATION (Shared Ownership)
+' =========================================================
+LuceneIndexManager o-- IndexReader
+SearchOperation o-- IndexSearcher
+SearchResultsPager o-- Weblog
+SearchResultsFeedPager o-- Weblog
+WeblogSearchRequest o-- WeblogCategory
+
+' =========================================================
+' ASSOCIATION – WEBLOG CONTENT
+' =========================================================
+AddEntryOperation --> WeblogEntry
+AddEntryOperation --> Weblogger
+
+ReIndexEntryOperation --> WeblogEntry
+ReIndexEntryOperation --> Weblogger
+
+RemoveEntryOperation --> WeblogEntry
+RemoveEntryOperation --> Weblogger
+
+RebuildWebsiteIndexOperation --> Weblog
+RebuildWebsiteIndexOperation --> Weblogger
+
+RemoveWebsiteIndexOperation --> Weblog
+RemoveWebsiteIndexOperation --> Weblogger
+
+' =========================================================
+' DEPENDENCY
+' =========================================================
+WriteToIndexOperation ..> ReadWriteLock
+ReadFromIndexOperation ..> ReadWriteLock
+
+SearchOperation ..> FieldConstants
+SearchOperation ..> IndexUtil
+IndexOperation ..> FieldConstants
+RemoveEntryOperation ..> FieldConstants
+RemoveEntryOperation ..> IndexUtil
+
+LuceneIndexManager ..> SearchResultList
+LuceneIndexManager ..> Directory
+LuceneIndexManager ..> Analyzer
+LuceneIndexManager ..> IndexOperation
+
+IndexUtil ..> LuceneIndexManager
+
+SearchResultsModel ..> Weblog
+SearchServlet ..> Weblog
+
+IndexManager ..> SearchResultList
+IndexManager ..> Weblog
+IndexManager ..> WeblogEntry
+
+' =========================================================
+' CREATION
+' =========================================================
+LuceneIndexManager ..> SearchOperation : <<create>>
+LuceneIndexManager ..> SearchResultList : <<create>>
+
+SearchServlet ..> WeblogSearchRequest : <<create>>
+SearchResultsModel ..> SearchResultsPager : <<create>>
+
+@enduml
