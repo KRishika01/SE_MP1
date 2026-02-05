@@ -20,6 +20,7 @@ package org.apache.roller.weblogger.business.search.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,13 +36,16 @@ import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
@@ -482,4 +486,25 @@ public class LuceneIndexManager implements IndexManager {
             throw new WebloggerException(e);
         }
     }
+    public static Term getTerm(String field, String input) {
+        if (input == null || field == null) {
+            return null;
+        }
+        Analyzer analyzer = LuceneIndexManager.getAnalyzer();
+        Term term = null;
+        try {
+            TokenStream tokens = analyzer.tokenStream(field, new StringReader(input));
+            CharTermAttribute termAtt = tokens.addAttribute(CharTermAttribute.class);
+            tokens.reset();
+
+            if (tokens.incrementToken()) {
+                String termt = termAtt.toString();
+                term = new Term(field, termt);
+            }
+        } catch (IOException e) {
+            // ignored
+        }
+        return term;
+    }
+
 }
