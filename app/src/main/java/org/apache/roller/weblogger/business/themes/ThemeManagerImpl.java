@@ -39,6 +39,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.InitializationException;
 import org.apache.roller.weblogger.business.MediaFileManager;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -199,6 +200,7 @@ public class ThemeManagerImpl implements ThemeManager {
 				+ weblog.getName() + "]");
 
 		WeblogManager wmgr = roller.getWeblogManager();
+		WeblogTemplateManager tmgr = roller.getWeblogTemplateManager();
 		MediaFileManager fileMgr = roller.getMediaFileManager();
 
 		MediaFileDirectory root = fileMgr.getDefaultMediaFileDirectory(weblog);
@@ -215,12 +217,12 @@ public class ThemeManagerImpl implements ThemeManager {
 			if (themeTemplate.getAction() != null
 					&& !themeTemplate.getAction().equals(ComponentType.CUSTOM)) {
 				importedActionTemplates.add(themeTemplate.getAction());
-				template = wmgr.getTemplateByAction(weblog,
+				template = tmgr.getTemplateByAction(weblog,
                         themeTemplate.getAction());
 
 				// otherwise, lookup by name
 			} else {
-				template = wmgr.getTemplateByName(weblog, themeTemplate.getName());
+				template = tmgr.getTemplateByName(weblog, themeTemplate.getName());
 			}
 
 			// Weblog does not have this template, so create it.
@@ -241,7 +243,7 @@ public class ThemeManagerImpl implements ThemeManager {
 				template.setLastModified(new Date());
 
 				// save it
-				wmgr.saveTemplate(template);
+				tmgr.saveTemplate(template);
 
                 // create weblog template code objects and save them
                 for (RenditionType type : RenditionType.values()) {
@@ -262,7 +264,7 @@ public class ThemeManagerImpl implements ThemeManager {
                         weblogTemplateCode.setTemplate(templateCode.getTemplate());
                         weblogTemplateCode.setTemplateLanguage(templateCode
                                 .getTemplateLanguage());
-                        WebloggerFactory.getWeblogger().getWeblogManager()
+                        WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                                 .saveTemplateRendition(weblogTemplateCode);
                     }
 
@@ -278,10 +280,10 @@ public class ThemeManagerImpl implements ThemeManager {
             }
 			// if we didn't import this action then see if it should be deleted
 			if (!importedActionTemplates.contains(action)) {
-				WeblogTemplate toDelete = wmgr.getTemplateByAction(weblog, action);
+				WeblogTemplate toDelete = tmgr.getTemplateByAction(weblog, action);
 				if (toDelete != null) {
 					log.debug("Removing stale action template " + toDelete.getId());
-					wmgr.removeTemplate(toDelete);
+					tmgr.removeTemplate(toDelete);
 				}
 			}
 		}

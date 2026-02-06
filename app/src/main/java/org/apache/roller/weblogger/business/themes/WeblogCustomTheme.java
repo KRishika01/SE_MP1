@@ -85,7 +85,7 @@ public class WeblogCustomTheme extends WeblogTheme {
      */
     @Override
     public List<? extends ThemeTemplate> getTemplates() throws WebloggerException {
-        return WebloggerFactory.getWeblogger().getWeblogManager().getTemplates(this.weblog);
+        return WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplates(this.weblog);
     }
     
     
@@ -105,7 +105,7 @@ public class WeblogCustomTheme extends WeblogTheme {
      */
     @Override
     public ThemeTemplate getDefaultTemplate() throws WebloggerException {
-        return WebloggerFactory.getWeblogger().getWeblogManager()
+        return WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                 .getTemplateByAction(this.weblog, ComponentType.WEBLOG);
     }
     
@@ -119,7 +119,7 @@ public class WeblogCustomTheme extends WeblogTheme {
         if (action == null) {
             return null;
         }
-        return WebloggerFactory.getWeblogger().getWeblogManager().getTemplateByAction(this.weblog, action);
+        return WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplateByAction(this.weblog, action);
     }
     
     
@@ -132,7 +132,7 @@ public class WeblogCustomTheme extends WeblogTheme {
         if (name == null) {
             return null;
         }
-        return WebloggerFactory.getWeblogger().getWeblogManager().getTemplateByName(this.weblog, name);
+        return WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplateByName(this.weblog, name);
     }
     
     
@@ -145,7 +145,7 @@ public class WeblogCustomTheme extends WeblogTheme {
         if (link == null) {
             return null;
         }
-        return WebloggerFactory.getWeblogger().getWeblogManager().getTemplateByLink(this.weblog, link);
+        return WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplateByLink(this.weblog, link);
     }
     
     

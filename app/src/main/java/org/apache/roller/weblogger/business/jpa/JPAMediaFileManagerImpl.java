@@ -48,6 +48,7 @@ import org.apache.roller.weblogger.business.FileContentManager;
 import org.apache.roller.weblogger.business.FileIOException;
 import org.apache.roller.weblogger.business.MediaFileManager;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -686,6 +687,8 @@ public class JPAMediaFileManagerImpl implements MediaFileManager {
 
                         if (dir.isDirectory()) {
                             WeblogManager wmgr = this.roller.getWeblogManager();
+                            WeblogQueryManager wqmgr = this.roller
+                                    .getWeblogQueryManager();
                             Weblog weblog = wmgr.getWeblogByHandle(
                                     dir.getName(), null);
                             if (weblog != null) {
@@ -694,7 +697,7 @@ public class JPAMediaFileManagerImpl implements MediaFileManager {
                                         + weblog.getHandle());
 
                                 // use 1st admin user found as file creator
-                                List<User> users = wmgr.getWeblogUsers(weblog,
+                                List<User> users = wqmgr.getWeblogUsers(weblog,
                                         true);
                                 User chosenUser = users.get(0);
                                 for (User user : users) {

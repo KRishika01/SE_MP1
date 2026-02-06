@@ -42,6 +42,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MailProvider;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.business.startup.WebloggerStartup;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.User;
@@ -85,6 +86,7 @@ public class MailUtil {
         
         try {
             WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
+            WeblogQueryManager wqm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
             
             String userName = entry.getCreator().getUserName();
             String from = entry.getCreator().getEmailAddress();
@@ -96,7 +98,7 @@ public class MailUtil {
             
             // list of enabled website authors and admins
             List<String> reviewers = new ArrayList<>();
-            List<User> websiteUsers = wmgr.getWeblogUsers(entry.getWebsite(), true);
+            List<User> websiteUsers = wqm.getWeblogUsers(entry.getWebsite(), true);
             
             // build list of reviewers (website users with author permission)
             for (User websiteUser : websiteUsers) {

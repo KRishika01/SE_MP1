@@ -299,6 +299,22 @@ public class JPABookmarkManagerImpl implements BookmarkManager {
 
 
     @Override
+    public void removeAllFolders(Weblog website) throws WebloggerException {
+        if (website == null) {
+            throw new WebloggerException("Website is null");
+        }
+        
+        TypedQuery<WeblogBookmarkFolder> q = strategy.getNamedQuery("WeblogBookmarkFolder.getByWebsite",
+                WeblogBookmarkFolder.class);
+        q.setParameter(1, website);
+        List<WeblogBookmarkFolder> folders = q.getResultList();
+        
+        for (WeblogBookmarkFolder wbf : folders) {
+            this.strategy.remove(wbf);
+        }
+    }
+
+    @Override
     public void release() {}
     
 }

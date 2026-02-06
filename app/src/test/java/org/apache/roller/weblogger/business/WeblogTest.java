@@ -161,6 +161,7 @@ public class WeblogTest  {
         Weblog testWeblog2 = null;
         try {
             WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
+            WeblogQueryManager qm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
 
             Weblog weblog = null;
             
@@ -199,7 +200,7 @@ public class WeblogTest  {
             
             // get all weblogs for user
             weblog = null;
-            List<Weblog> weblogs1 = mgr.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
+            List<Weblog> weblogs1 = qm.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
             assertEquals(2, weblogs1.size());
             weblog = weblogs1.get(0);
             assertNotNull(weblog);           
@@ -208,7 +209,7 @@ public class WeblogTest  {
             weblog.setVisible(Boolean.FALSE);
             mgr.saveWeblog(weblog);
             TestUtils.endSession(true);
-            List<Weblog> weblogs2 = mgr.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
+            List<Weblog> weblogs2 = qm.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
             assertEquals(1, weblogs2.size());
             weblog = weblogs2.get(0);
             assertNotNull(weblog);
@@ -217,7 +218,7 @@ public class WeblogTest  {
             weblog.setActive(Boolean.FALSE);
             mgr.saveWeblog(weblog);
             TestUtils.endSession(true);
-            List<Weblog> weblogs3 = mgr.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
+            List<Weblog> weblogs3 = qm.getUserWeblogs(TestUtils.getManagedUser(testUser), true);
             assertEquals(0, weblogs3.size());
             
         } finally {

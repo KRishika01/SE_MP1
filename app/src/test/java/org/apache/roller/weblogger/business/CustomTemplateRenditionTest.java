@@ -93,9 +93,9 @@ public class CustomTemplateRenditionTest  {
        @Test
        public void testTemplateCRUD() throws Exception {
            WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
-
+           WeblogTemplateManager templateMgr = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
            // create template
-           mgr.saveTemplate(testPage);
+           templateMgr.saveTemplate(testPage);
 
            //create standard template rendition
            CustomTemplateRendition standardTemplateCode = new CustomTemplateRendition(testPage, RenditionType.STANDARD);
@@ -110,7 +110,7 @@ public class CustomTemplateRenditionTest  {
            TestUtils.endSession(true);
 
            // check that create was successful
-           WeblogTemplate testPageCheck = mgr.getTemplate(testPage.getId());
+           WeblogTemplate testPageCheck = templateMgr.getTemplate(testPage.getId());
 
            assertNotNull(testPageCheck);
 
@@ -126,12 +126,12 @@ public class CustomTemplateRenditionTest  {
            standardCode = null;
            standardCode = testPageCheck.getTemplateRendition(RenditionType.STANDARD);
            standardCode.setTemplate("update.standard.template");
-           mgr.saveTemplateRendition(standardCode);
+           templateMgr.saveTemplateRendition(standardCode);
 
            mobileCode = null;
            mobileCode = testPageCheck.getTemplateRendition(RenditionType.MOBILE);
            mobileCode.setTemplate("update.mobile.template");
-           mgr.saveTemplateRendition(mobileCode);
+           templateMgr.saveTemplateRendition(mobileCode);
 
            TestUtils.endSession(true);
 
@@ -144,12 +144,12 @@ public class CustomTemplateRenditionTest  {
            mobileCode = testPageCheck.getTemplateRendition(RenditionType.MOBILE);
            assertEquals("update.mobile.template",mobileCode.getTemplate());
 
-           WeblogTemplate page = mgr.getTemplate(testPage.getId());
-           mgr.removeTemplate(page);
+           WeblogTemplate page = templateMgr.getTemplate(testPage.getId());
+           templateMgr.removeTemplate(page);
            TestUtils.endSession(true);
 
            // check that template remove was successful
-           testPageCheck = mgr.getTemplate(testPage.getId());
+           testPageCheck = templateMgr.getTemplate(testPage.getId());
            assertNull(testPageCheck);
 
        }

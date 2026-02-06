@@ -55,7 +55,7 @@ public class WeblogEntryTest  {
         TestUtils.setupWeblogger();
         
         assertEquals(0L,
-           WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
+           WebloggerFactory.getWeblogger().getWeblogQueryManager().getWeblogCount());
 
         try {
             testUser = TestUtils.setupUser("entryTestUser");
@@ -1003,6 +1003,7 @@ public class WeblogEntryTest  {
         WeblogEntryManager emgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
         WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        WeblogQueryManager qmgr = WebloggerFactory.getWeblogger().getWeblogQueryManager();
         
         long existingUserCount = umgr.getUserCount() - 1;
         
@@ -1041,7 +1042,7 @@ public class WeblogEntryTest  {
             assertEquals(3L, blog2.getCommentCount());
             assertEquals(5L, emgr.getCommentCount());
 
-            assertEquals(4L, wmgr.getWeblogCount());
+            assertEquals(4L, qmgr.getWeblogCount());
             assertEquals(existingUserCount + 2L, umgr.getUserCount());
             
         } finally {

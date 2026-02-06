@@ -89,7 +89,7 @@ public class WeblogSharedTheme extends WeblogTheme {
         
         // first get the pages from the db
         try {
-            for (ThemeTemplate template : WebloggerFactory.getWeblogger().getWeblogManager().getTemplates(this.weblog)) {
+            for (ThemeTemplate template : WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplates(this.weblog)) {
                 pages.put(template.getName(), template);
             }
         } catch(Exception e) {
@@ -129,7 +129,7 @@ public class WeblogSharedTheme extends WeblogTheme {
         if (stylesheet != null) {
             // now try getting custom version from weblog
             ThemeTemplate override = WebloggerFactory.getWeblogger()
-                    .getWeblogManager().getTemplateByAction(this.weblog, ComponentType.STYLESHEET);
+                    .getWeblogTemplateManager().getTemplateByAction(this.weblog, ComponentType.STYLESHEET);
             if (override != null) {
                 stylesheet = override;
             }
@@ -190,7 +190,7 @@ public class WeblogSharedTheme extends WeblogTheme {
         
         // if we didn't get the Template from a theme then look in the db
         if (template == null) {
-            template = WebloggerFactory.getWeblogger().getWeblogManager().getTemplateByName(this.weblog, name);
+            template = WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplateByName(this.weblog, name);
         }
         
         return template;
@@ -223,7 +223,7 @@ public class WeblogSharedTheme extends WeblogTheme {
         // if we didn't get the Template from a theme then look in the db
         if(template == null) {
             template = WebloggerFactory.getWeblogger()
-                    .getWeblogManager().getTemplateByLink(this.weblog, link);
+                    .getWeblogTemplateManager().getTemplateByLink(this.weblog, link);
         }
 
         return template;

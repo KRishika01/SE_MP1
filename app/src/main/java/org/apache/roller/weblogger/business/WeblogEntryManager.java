@@ -397,5 +397,16 @@ public interface WeblogEntryManager {
      */    
     long getEntryCount(Weblog websiteData) throws WebloggerException;
 
+    /**
+     * Remove all tags associated with a weblog.
+     * @param weblog The weblog to remove tags from.
+     */
+    void removeWeblogEntryTags(Weblog weblog) throws WebloggerException;
+
+    /**
+     * Remove all categories associated with a weblog.
+     * @param weblog The weblog to remove categories from.
+     */
+    void removeWeblogCategories(Weblog weblog) throws WebloggerException;
 }
 

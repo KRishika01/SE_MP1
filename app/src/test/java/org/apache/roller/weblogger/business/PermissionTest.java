@@ -244,6 +244,7 @@ public class PermissionTest  {
 
         WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        WeblogQueryManager qmgr = WebloggerFactory.getWeblogger().getWeblogQueryManager();
 
         // invite user to weblog
         List<String> actions = new ArrayList<>();
@@ -267,12 +268,12 @@ public class PermissionTest  {
 
         // assert that user is member of weblog
         assertNotNull(umgr.getWeblogPermission(testWeblog, user));
-        List<Weblog> weblogs = wmgr.getUserWeblogs(TestUtils.getManagedUser(user), true);
+        List<Weblog> weblogs = qmgr.getUserWeblogs(TestUtils.getManagedUser(user), true);
         assertEquals(1, weblogs.size());
         assertEquals(testWeblog.getId(), weblogs.get(0).getId());
 
         // assert that website has user
-        List<User> users = wmgr.getWeblogUsers(testWeblog, true);
+        List<User> users = qmgr.getWeblogUsers(testWeblog, true);
         assertEquals(2, users.size());
 
         // test user can be retired from website
@@ -280,7 +281,7 @@ public class PermissionTest  {
         TestUtils.endSession(true);
 
         //user = umgr.getUser(user.getId());
-        weblogs = wmgr.getUserWeblogs(user, true);
+        weblogs = qmgr.getUserWeblogs(user, true);
         assertEquals(0, weblogs.size());
 
         // cleanup the extra test user
