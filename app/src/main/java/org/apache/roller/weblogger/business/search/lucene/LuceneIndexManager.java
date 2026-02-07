@@ -1,72 +1,42 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  The ASF licenses this file to You
- * under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.  For additional information regarding
- * copyright in this work, please see the NOTICE file in the top level
- * directory of this distribution.
- */
 
 package org.apache.roller.weblogger.business.search.lucene;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.InitializationException;
 import org.apache.roller.weblogger.business.URLStrategy;
-import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.Weblogger;
-import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.search.IndexManager;
 import org.apache.roller.weblogger.business.search.SearchResultList;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
-import org.apache.roller.weblogger.pojos.wrapper.WeblogEntryWrapper;
 
 /**
  * Lucene implementation of IndexManager. This is the central entry point into
  * the Lucene searching API.
+ * 
+ * Refactored to delegate responsibilities to specialized components while
+ * maintaining backward compatibility with existing tests and API consumers.
+ * 
+ * Components:
+ * - IndexLifecycleManager: handles initialization, consistency checks, shutdown
+ * - IndexDirectoryManager: manages Lucene directories and index creation
+ * - IndexReaderManager: manages shared IndexReader instances
+ * - SearchResultConverter: converts Lucene hits to WeblogEntry objects
+ * - AnalyzerFactory: creates Analyzer instances
+ * - TermExtractor: extracts Terms from text
  * 
  * @author Mindaugas Idzelis (min@idzelis.com)
  * @author mraible (formatting and making indexDir configurable)
@@ -74,21 +44,18 @@ import org.apache.roller.weblogger.pojos.wrapper.WeblogEntryWrapper;
 @com.google.inject.Singleton
 public class LuceneIndexManager implements IndexManager {
 
-    private IndexReader reader;
-    private final Weblogger roller;
+    private static final Log logger = LogFactory.getLog(LuceneIndexManager.class);
 
-    private final static Log logger = LogFactory.getFactory().getInstance(LuceneIndexManager.class);
+    private final Weblogger roller;
+    private final ReadWriteLock rwl = new ReentrantReadWriteLock();
+    
+    // Delegated components (internal implementation details)
+    private final IndexLifecycleManager lifecycleManager;
+    private final IndexDirectoryManager directoryManager;
+    private final IndexReaderManager readerManager;
+    private final SearchResultConverter resultConverter;
 
     private boolean searchEnabled = true;
-
-    private final String indexDir;
-
-    private final File indexConsistencyMarker;
-
-    private boolean inconsistentAtStartup = false;
-
-    private final ReadWriteLock rwl = new ReentrantReadWriteLock();
-
 
     /**
      * Creates a new lucene index manager. This should only be created once.
@@ -102,23 +69,25 @@ public class LuceneIndexManager implements IndexManager {
     protected LuceneIndexManager(Weblogger roller) {
         this.roller = roller;
 
-        // check config to see if the internal search is enabled
+        // Check config to see if the internal search is enabled
         String enabled = WebloggerConfig.getProperty("search.enabled");
         if ("false".equalsIgnoreCase(enabled)) {
             this.searchEnabled = false;
         }
 
-        // we also need to know what our index directory is
-        // Note: system property expansion is now handled by WebloggerConfig
+        // Get index directory from configuration
         String searchIndexDir = WebloggerConfig.getProperty("search.index.dir");
-        this.indexDir = searchIndexDir.replace('/', File.separatorChar);
+        String indexDir = searchIndexDir.replace('/', File.separatorChar);
 
-        // a little debugging
-        logger.info("search enabled: " + this.searchEnabled);
-        logger.info("index dir: " + this.indexDir);
+        // Initialize delegated components (hidden from public API)
+        this.lifecycleManager = new IndexLifecycleManager(indexDir);
+        this.directoryManager = new IndexDirectoryManager(indexDir);
+        this.readerManager = new IndexReaderManager(directoryManager);
+        this.resultConverter = new SearchResultConverter();
 
-        String test = indexDir + File.separator + ".index-inconsistent";
-        indexConsistencyMarker = new File(test);
+        // Log configuration
+        logger.info("Search enabled: " + this.searchEnabled);
+        logger.info("Index directory: " + indexDir);
     }
 
     /**
@@ -126,90 +95,78 @@ public class LuceneIndexManager implements IndexManager {
      */
     @Override
     public void initialize() throws InitializationException {
-
-        // only initialize the index if search is enabled
-        if (this.searchEnabled) {
-
-            // delete index if inconsistency marker exists
-            if (indexConsistencyMarker.exists()) {
-                logger.debug("Index inconsistent: marker exists");
-                inconsistentAtStartup = true;
-                deleteIndex();
-            } else {
-                try {
-                    File makeIndexDir = new File(indexDir);
-                    if (!makeIndexDir.exists()) {
-                        makeIndexDir.mkdirs();
-                        inconsistentAtStartup = true;
-                        logger.debug("Index inconsistent: new");
-                    }
-                    indexConsistencyMarker.createNewFile();
-                } catch (IOException e) {
-                    logger.error(e);
-                }
-            }
-
-            if (indexExists()) {
-
-                // test if the index is readable, if the version is outdated or it fails we rebuild.
-                try {
-                    synchronized(this) {
-                        reader = DirectoryReader.open(getIndexDirectory());
-                    }
-                } catch (IOException | IllegalArgumentException ex) {  // IAE for incompatible codecs
-                    logger.warn("Failed to open search index, scheduling rebuild.", ex);
-                    inconsistentAtStartup = true;
-                    deleteIndex();
-                }
-            } else {
-                logger.debug("Creating index");
-                inconsistentAtStartup = true;
-                deleteIndex();
-                createIndex(getIndexDirectory());
-            }
-
-            if (inconsistentAtStartup) {
-                logger.info("Index was inconsistent. Rebuilding index in the background...");
-                try {
-                    rebuildWeblogIndex();
-                } catch (WebloggerException ex) {
-                    logger.error("ERROR: scheduling re-index operation", ex);
-                }
-            } else {
-                logger.info("Index initialized and ready for use.");
-            }
+        // Only initialize the index if search is enabled
+        if (!this.searchEnabled) {
+            logger.info("Search is disabled, skipping index initialization");
+            return;
         }
 
+        // Delegate to lifecycle manager
+        lifecycleManager.initialize();
+
+        // Check if index exists and is readable
+        if (directoryManager.indexExists()) {
+            boolean readerInitialized = readerManager.initialize();
+            
+            if (!readerInitialized) {
+                logger.warn("Failed to initialize index reader, scheduling rebuild");
+                lifecycleManager.markInconsistent();
+                lifecycleManager.deleteIndex();
+            }
+        } else {
+            logger.debug("Index does not exist, will be created");
+            lifecycleManager.markInconsistent();
+            lifecycleManager.deleteIndex();
+            directoryManager.createIndex(directoryManager.getIndexDirectory());
+        }
+
+        // Rebuild index if inconsistent
+        if (lifecycleManager.isInconsistentAtStartup()) {
+            logger.info("Index was inconsistent. Rebuilding index in the background...");
+            try {
+                rebuildWeblogIndex();
+            } catch (WebloggerException ex) {
+                logger.error("ERROR: scheduling re-index operation", ex);
+            }
+        } else {
+            logger.info("Index initialized and ready for use.");
+        }
     }
 
     @Override
     public void rebuildWeblogIndex() throws WebloggerException {
-        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this, null));
+        scheduleIndexOperation(
+            new RebuildWebsiteIndexOperation(roller, this, null));
     }
 
     @Override
     public void rebuildWeblogIndex(Weblog website) throws WebloggerException {
-        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this, website));
+        scheduleIndexOperation(
+            new RebuildWebsiteIndexOperation(roller, this, website));
     }
 
     @Override
     public void removeWeblogIndex(Weblog website) throws WebloggerException {
-        scheduleIndexOperation(new RemoveWebsiteIndexOperation(roller, this, website));
+        scheduleIndexOperation(
+            new RemoveWebsiteIndexOperation(roller, this, website));
     }
 
     @Override
     public void addEntryIndexOperation(WeblogEntry entry) throws WebloggerException {
-        scheduleIndexOperation(new AddEntryOperation(roller, this, entry));
+        scheduleIndexOperation(
+            new AddEntryOperation(roller, this, entry));
     }
 
     @Override
     public void addEntryReIndexOperation(WeblogEntry entry) throws WebloggerException {
-        scheduleIndexOperation(new ReIndexEntryOperation(roller, this, entry));
+        scheduleIndexOperation(
+            new ReIndexEntryOperation(roller, this, entry));
     }
 
     @Override
     public void removeEntryIndexOperation(WeblogEntry entry) throws WebloggerException {
-        executeIndexOperationNow(new RemoveEntryOperation(roller, this, entry));
+        executeIndexOperationNow(
+            new RemoveEntryOperation(roller, this, entry));
     }
 
     @Override
@@ -224,6 +181,7 @@ public class LuceneIndexManager implements IndexManager {
 
         SearchOperation search = new SearchOperation(this);
         search.setTerm(term);
+        
         boolean weblogSpecific = !WebloggerRuntimeConfig.isSiteWideWeblog(weblogHandle);
         if (weblogSpecific) {
             search.setWeblogHandle(weblogHandle);
@@ -236,10 +194,13 @@ public class LuceneIndexManager implements IndexManager {
         }
 
         executeIndexOperationNow(search);
+        
         if (search.getResultsCount() >= 0) {
             TopFieldDocs docs = search.getResults();
             ScoreDoc[] hitsArr = docs.scoreDocs;
-            return convertHitsToEntryList(
+            
+            // Delegate to result converter (internal implementation)
+            return resultConverter.convertHitsToEntryList(
                 hitsArr,
                 search,
                 pageNum,
@@ -248,263 +209,128 @@ public class LuceneIndexManager implements IndexManager {
                 weblogSpecific,
                 urlStrategy);
         }
+        
         throw new WebloggerException("Error executing search");
     }
 
+    /**
+     * Gets the read-write lock for thread-safe index operations.
+     * PUBLIC API - must remain for backward compatibility.
+     *
+     * @return ReadWriteLock instance
+     */
     public ReadWriteLock getReadWriteLock() {
         return rwl;
     }
 
     @Override
     public boolean isInconsistentAtStartup() {
-        return inconsistentAtStartup;
+        // Delegate to lifecycle manager
+        return lifecycleManager.isInconsistentAtStartup();
     }
 
     /**
-     * This is the analyzer that will be used to tokenize comment text.
+     * Gets the analyzer used for tokenizing text.
+     * PUBLIC STATIC API - must remain for backward compatibility.
      * 
-     * @return Analyzer to be used in manipulating the database.
+     * Delegates to AnalyzerFactory for actual implementation.
+     * 
+     * @return Analyzer instance
      */
-    public static final Analyzer getAnalyzer() {
-        return instantiateAnalyzer();
+    public static Analyzer getAnalyzer() {
+        // Delegate to factory (internal implementation)
+        return AnalyzerFactory.createAnalyzer();
     }
 
-    private static Analyzer instantiateAnalyzer() {
-        final String className = WebloggerConfig.getProperty("lucene.analyzer.class");
-        try {
-            final Class<?> clazz = Class.forName(className);
-            return (Analyzer) ConstructorUtils.invokeConstructor(clazz, null);
-        } catch (final ClassNotFoundException e) {
-            logger.error("failed to lookup analyzer class: " + className, e);
-            return instantiateDefaultAnalyzer();
-        } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            logger.error("failed to instantiate analyzer: " + className, e);
-            return instantiateDefaultAnalyzer();
-        }
+    /**
+     * Extracts a Lucene Term from the input text.
+     * PUBLIC STATIC API - must remain for backward compatibility.
+     * 
+     * Delegates to TermExtractor for actual implementation.
+     *
+     * @param field the field name
+     * @param input the input text
+     * @return Term object, or null if extraction fails
+     */
+    public static Term getTerm(String field, String input) {
+        // Delegate to extractor (internal implementation)
+        return TermExtractor.getTerm(field, input);
     }
 
-    private static Analyzer instantiateDefaultAnalyzer() {
-        return new StandardAnalyzer();
-    }
-
+    /**
+     * Schedules an index operation to run in the background.
+     */
     private void scheduleIndexOperation(final IndexOperation op) {
         try {
-            // only if search is enabled
             if (this.searchEnabled) {
-                logger.debug("Starting scheduled index operation: "
-                        + op.getClass().getName());
+                logger.debug("Scheduling index operation: " + op.getClass().getName());
                 roller.getThreadManager().executeInBackground(op);
             }
         } catch (InterruptedException e) {
-            logger.error("Error executing operation", e);
+            logger.error("Error scheduling index operation", e);
         }
     }
 
     /**
-     * @param op
+     * Executes an index operation immediately in the foreground.
      */
     private void executeIndexOperationNow(final IndexOperation op) {
         try {
-            // only if search is enabled
             if (this.searchEnabled) {
                 logger.debug("Executing index operation now: " + op.getClass().getName());
                 roller.getThreadManager().executeInForeground(op);
             }
         } catch (InterruptedException e) {
-            logger.error("Error executing operation", e);
+            logger.error("Error executing index operation", e);
         }
-    }
-
-    public synchronized void resetSharedReader() {
-        reader = null;
-    }
-
-    public synchronized IndexReader getSharedIndexReader() {
-        if (reader == null) {
-            try {
-                reader = DirectoryReader.open(getIndexDirectory());
-            } catch (IOException ex) {
-                logger.error("Error opening DirectoryReader", ex);
-                throw new RuntimeException(ex);
-            }
-        }
-        return reader;
     }
 
     /**
-     * Get the directory that is used by the lucene index. This method will
-     * return null if there is no index at the directory location.
+     * Resets the shared reader, forcing it to be recreated.
+     * PUBLIC API - must remain for backward compatibility.
      * 
-     * @return Directory The directory containing the index, or null if error.
+     * Delegates to IndexReaderManager.
+     */
+    public synchronized void resetSharedReader() {
+        // Delegate to reader manager
+        readerManager.resetSharedReader();
+    }
+
+    /**
+     * Gets the shared IndexReader instance.
+     * PUBLIC API - must remain for backward compatibility.
+     * 
+     * Delegates to IndexReaderManager.
+     *
+     * @return IndexReader instance
+     */
+    public synchronized IndexReader getSharedIndexReader() {
+        // Delegate to reader manager
+        return readerManager.getSharedIndexReader();
+    }
+
+    /**
+     * Gets the index directory.
+     * PUBLIC API - must remain for backward compatibility.
+     * 
+     * Delegates to IndexDirectoryManager.
+     *
+     * @return Directory instance
      */
     public Directory getIndexDirectory() {
-
-        try {
-            return FSDirectory.open(Path.of(indexDir));
-        } catch (IOException e) {
-            logger.error("Problem accessing index directory", e);
-        }
-        return null;
-    }
-
-    private boolean indexExists() {
-        try {
-            return DirectoryReader.indexExists(getIndexDirectory());
-        } catch (IOException e) {
-            logger.error("Problem accessing index directory", e);
-        }
-        return false;
-    }
-
-    
-    private void deleteIndex() {
-        
-        try(FSDirectory directory = FSDirectory.open(Path.of(indexDir))) {
-            
-            String[] files = directory.listAll();
-            for (String file : files) {
-                Files.delete(Path.of(indexDir, file));
-            }
-        } catch (IOException ex) {
-             logger.error("Problem accessing index directory", ex);
-        }
-
-    }
-
-    private void createIndex(Directory dir) {
-        IndexWriter writer = null;
-
-        try {
-
-            IndexWriterConfig config = new IndexWriterConfig(
-                    new LimitTokenCountAnalyzer(
-                            LuceneIndexManager.getAnalyzer(), 128));
-
-            writer = new IndexWriter(dir, config);
-
-        } catch (IOException e) {
-            logger.error("Error creating index", e);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException ex) {
-                    logger.warn("Unable to close IndexWriter.", ex);
-                }
-            }
-        }
+        // Delegate to directory manager
+        return directoryManager.getIndexDirectory();
     }
 
     @Override
     public void release() {
-        // no-op
+        // No-op: kept for interface compatibility
     }
 
     @Override
     public void shutdown() {
-        
-        indexConsistencyMarker.delete();
-
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException ex) {
-                logger.error("Unable to close reader.", ex);
-            }
-        }
+        // Delegate to components
+        lifecycleManager.shutdown();
+        readerManager.shutdown();
     }
-
-    /**
-     * Convert hits to entries.
-     *
-     * @param hits
-     *            the hits
-     * @param search
-     *            the search
-     * @throws WebloggerException
-     *             the weblogger exception
-     */
-    static SearchResultList convertHitsToEntryList(
-        ScoreDoc[] hits,
-        SearchOperation search,
-        int pageNum,
-        int entryCount,
-        String weblogHandle,
-        boolean websiteSpecificSearch,
-        URLStrategy urlStrategy)
-        throws WebloggerException {
-
-        List<WeblogEntryWrapper> results = new ArrayList<>();
-
-        // determine offset
-        int offset = pageNum * entryCount;
-        if (offset >= hits.length) {
-            offset = 0;
-        }
-
-        // determine limit
-        int limit = entryCount;
-        if (offset + limit > hits.length) {
-            limit = hits.length - offset;
-        }
-
-        try {
-            Set<String> categories = new TreeSet<>();
-            TreeSet<String> categorySet = new TreeSet<>();
-            Weblogger roller = WebloggerFactory.getWeblogger();
-            WeblogEntryManager weblogMgr = roller.getWeblogEntryManager();
-
-            WeblogEntry entry;
-            Document doc;
-            String handle;
-            Timestamp now = new Timestamp(new Date().getTime());
-            for (int i = offset; i < offset + limit; i++) {
-                doc = search.getSearcher().doc(hits[i].doc);
-                handle = doc.getField(FieldConstants.WEBSITE_HANDLE).stringValue();
-                entry = weblogMgr.getWeblogEntry(doc.getField(FieldConstants.ID).stringValue());
-
-                if (!(websiteSpecificSearch && handle.equals(weblogHandle))
-                    && doc.getField(FieldConstants.CATEGORY) != null) {
-                    categorySet.add(doc.getField(FieldConstants.CATEGORY).stringValue());
-                }
-
-                // maybe null if search result returned inactive user
-                // or entry's user is not the requested user.
-                // but don't return future posts
-                if (entry != null && entry.getPubTime().before(now)) {
-                    results.add(WeblogEntryWrapper.wrap(entry, urlStrategy));
-                }
-            }
-
-            if (!categorySet.isEmpty()) {
-                categories = categorySet;
-            }
-
-            return new SearchResultList(results, categories, limit, offset);
-
-        } catch (IOException e) {
-            throw new WebloggerException(e);
-        }
-    }
-    public static Term getTerm(String field, String input) {
-        if (input == null || field == null) {
-            return null;
-        }
-        Analyzer analyzer = LuceneIndexManager.getAnalyzer();
-        Term term = null;
-        try {
-            TokenStream tokens = analyzer.tokenStream(field, new StringReader(input));
-            CharTermAttribute termAtt = tokens.addAttribute(CharTermAttribute.class);
-            tokens.reset();
-
-            if (tokens.incrementToken()) {
-                String termt = termAtt.toString();
-                term = new Term(field, termt);
-            }
-        } catch (IOException e) {
-            // ignored
-        }
-        return term;
-    }
-
 }
