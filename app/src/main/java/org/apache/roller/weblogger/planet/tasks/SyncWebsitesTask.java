@@ -162,7 +162,7 @@ public class SyncWebsitesTask extends RollerTaskWithLeasing {
             // walk through all enable weblogs and add/update subs as needed
             List<String> liveUserFeeds = new ArrayList<>();
             List<Weblog> websites = WebloggerFactory.getWeblogger()
-                    .getWeblogManager().getWeblogs(Boolean.TRUE, Boolean.TRUE, null, null, 0, -1);
+                    .getWeblogQueryManager().getWeblogs(Boolean.TRUE, Boolean.TRUE, null, null, 0, -1);
             for ( Weblog weblog : websites ) {
 
                 log.debug("processing weblog - "+weblog.getHandle());

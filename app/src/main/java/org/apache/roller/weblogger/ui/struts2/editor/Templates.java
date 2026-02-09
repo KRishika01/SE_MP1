@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.*;
 import org.apache.roller.weblogger.pojos.TemplateRendition.RenditionType;
@@ -75,13 +76,13 @@ public class Templates extends UIAction {
 
             // get current list of templates, minus custom stylesheet
             List<WeblogTemplate> raw = WebloggerFactory.getWeblogger()
-                .getWeblogManager().getTemplates(getActionWeblog());
+                .getWeblogTemplateManager().getTemplates(getActionWeblog());
             List<WeblogTemplate> pages = new ArrayList<>(raw);
 
             // Remove style sheet from list so not to show when theme is
             // selected in shared theme mode
             if (getActionWeblog().getTheme().getStylesheet() != null) {
-                pages.remove(WebloggerFactory.getWeblogger().getWeblogManager()
+                pages.remove(WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                     .getTemplateByLink(getActionWeblog(), getActionWeblog().getTheme().getStylesheet().getLink()));
             }
             setTemplates(pages);
@@ -163,14 +164,14 @@ public class Templates extends UIAction {
                 }
 
                 // save the new Template
-                WebloggerFactory.getWeblogger().getWeblogManager().saveTemplate(newTemplate);
+                WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplate(newTemplate);
 
                 // Create weblog template renditions for available types.
                 CustomTemplateRendition standardRendition =
                     new CustomTemplateRendition( newTemplate, RenditionType.STANDARD);
                 standardRendition.setTemplate(getText("pageForm.newTemplateContent"));
                 standardRendition.setTemplateLanguage(TemplateLanguage.VELOCITY);
-                WebloggerFactory.getWeblogger().getWeblogManager().saveTemplateRendition(standardRendition);
+                WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplateRendition(standardRendition);
 
                 /* TODO: need a way for user to specify dual or single template via UI
                 CustomTemplateRendition mobileRendition = new CustomTemplateRendition(
@@ -210,7 +211,7 @@ public class Templates extends UIAction {
 
         WeblogTemplate template = null;
         try {
-            template = WebloggerFactory.getWeblogger().getWeblogManager().getTemplate(getRemoveId());
+            template = WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplate(getRemoveId());
         } catch (WebloggerException e) {
             addError("Error deleting template - check Roller logs");
         }
@@ -221,6 +222,7 @@ public class Templates extends UIAction {
                     || !WeblogTheme.CUSTOM.equals(getActionWeblog().getEditorTheme())) {
 
                     WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
+                    WeblogTemplateManager tmgr = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
 
                     // if weblog template remove custom style sheet also
                     if (template.getName().equals(WeblogTemplate.DEFAULT_PAGE)) {
@@ -235,17 +237,17 @@ public class Templates extends UIAction {
 
                             // Same so OK to delete
                             WeblogTemplate css =
-                                mgr.getTemplateByLink(getActionWeblog(), stylesheet.getLink());
+                                tmgr.getTemplateByLink(getActionWeblog(), stylesheet.getLink());
 
                             if (css != null) {
-                                mgr.removeTemplate(css);
+                                tmgr.removeTemplate(css);
                             }
                         }
                     }
 
                     // notify cache
                     CacheManager.invalidate(template);
-                    mgr.removeTemplate(template);
+                    tmgr.removeTemplate(template);
                     WebloggerFactory.getWeblogger().flush();
 
                 } else {
@@ -280,7 +282,7 @@ public class Templates extends UIAction {
 
         // check if template by that name already exists
         try {
-            WeblogTemplate existingPage = WebloggerFactory.getWeblogger().getWeblogManager()
+            WeblogTemplate existingPage = WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                 .getTemplateByName(getActionWeblog(), getNewTmplName());
             if (existingPage != null) {
                 addError("pagesForm.error.alreadyExists", getNewTmplName());

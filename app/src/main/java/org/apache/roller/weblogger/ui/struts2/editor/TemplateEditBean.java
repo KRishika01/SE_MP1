@@ -158,18 +158,18 @@ public class TemplateEditBean {
             // if we have a template, then set it
             CustomTemplateRendition tc = dataHolder.getTemplateRendition(RenditionType.STANDARD);
             tc.setTemplate(contentsStandard);
-            WebloggerFactory.getWeblogger().getWeblogManager().saveTemplateRendition(tc);
+            WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplateRendition(tc);
         } else { 
             // otherwise create it, then set it
             CustomTemplateRendition tc = new CustomTemplateRendition(dataHolder, RenditionType.STANDARD);
 			tc.setTemplate("");
-            WebloggerFactory.getWeblogger().getWeblogManager().saveTemplateRendition(tc);
+            WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplateRendition(tc);
         }
 
         if (dataHolder.getTemplateRendition(RenditionType.MOBILE) != null) {
             CustomTemplateRendition tc = dataHolder.getTemplateRendition(RenditionType.MOBILE);
             tc.setTemplate(contentsMobile);
-            WebloggerFactory.getWeblogger().getWeblogManager().saveTemplateRendition(tc);
+            WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplateRendition(tc);
         }
 
         // the rest of the template properties can be modified only when

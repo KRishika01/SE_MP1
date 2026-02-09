@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntrySearchCriteria;
 import org.apache.roller.weblogger.ui.rendering.util.WeblogPageRequest;
@@ -103,7 +104,7 @@ public class BigWeblogCalendarModel extends WeblogCalendarModel {
                 for ( int i=0; i<entries.size(); i++ ) {
                     sb.append("<div class=\"bCalendarDayContentBig\">");
                     sb.append("<a href=\"");
-                    sb.append(((WeblogEntry)entries.get(i)).getPermalink());
+                    sb.append(WeblogEntryPermalinkSupport.getPermalink((WeblogEntry)entries.get(i)));
                     sb.append("\">");
                     
                     String title = ((WeblogEntry)entries.get(i)).getTitle().trim();

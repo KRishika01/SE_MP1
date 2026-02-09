@@ -32,6 +32,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
@@ -144,11 +145,16 @@ public class WebloggerRomeFeedFetcher extends RomeFeedFetcher {
                 }
                 content = ppmgr.applyWeblogEntryPlugins(pagePlugins, rollerEntry, content);
                 
-                entry.setAuthor(rollerEntry.getCreator().getScreenName());
+                try {
+                    org.apache.roller.weblogger.pojos.User creator = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(rollerEntry.getCreatorUserName());
+                    entry.setAuthor(creator != null ? creator.getScreenName() : rollerEntry.getCreatorUserName());
+                } catch (Exception e) {
+                    entry.setAuthor(rollerEntry.getCreatorUserName());
+                }
                 entry.setTitle(rollerEntry.getTitle());
                 entry.setPubTime(rollerEntry.getPubTime());
                 entry.setText(content);
-                entry.setPermalink(rollerEntry.getPermalink());
+                entry.setPermalink(WeblogEntryPermalinkSupport.getPermalink(rollerEntry));
                 entry.setCategoriesString(rollerEntry.getCategory().getName());
                 
                 newSub.addEntry(entry);

@@ -34,6 +34,7 @@ import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.MediaFile;
 import org.apache.roller.weblogger.pojos.MediaFileDirectory;
@@ -456,7 +457,7 @@ public class MetaWeblogAPIHandler extends BloggerAPIHandler {
     private Hashtable<String, Object> createPostStruct(WeblogEntry entry, String userid) {
         
         String permalink =
-            WebloggerRuntimeConfig.getAbsoluteContextURL() + entry.getPermaLink();
+            WebloggerRuntimeConfig.getAbsoluteContextURL() + WeblogEntryPermalinkSupport.getPermaLink(entry);
         
         Hashtable<String, Object> struct = new Hashtable<>();
         struct.put("title", entry.getTitle());
@@ -472,8 +473,14 @@ public class MetaWeblogAPIHandler extends BloggerAPIHandler {
         struct.put("permaLink", Utilities.escapeHTML(permalink));
         struct.put("postid", entry.getId());
         
-        struct.put("userid", entry.getCreator().getUserName());
-        struct.put("author", entry.getCreator().getEmailAddress());
+        try {
+            User creator = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(entry.getCreatorUserName());
+            struct.put("userid", creator.getUserName());
+            struct.put("author", creator.getEmailAddress());
+        } catch (Exception e) {
+            struct.put("userid", entry.getCreatorUserName());
+            struct.put("author", entry.getCreatorUserName());
+        }
        
         if ( entry.getCategory() != null ) {
             Vector<Object> catArray = new Vector<>();

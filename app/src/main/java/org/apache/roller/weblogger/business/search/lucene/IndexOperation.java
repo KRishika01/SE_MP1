@@ -35,6 +35,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.BytesRef;
 import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
+import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogCategory;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
@@ -78,7 +81,7 @@ public abstract class IndexOperation implements Runnable {
         String commentEmail = "";
         String commentName = "";
         if (indexComments) {
-            List<WeblogEntryComment> comments = data.getComments();
+            List<WeblogEntryComment> comments = WeblogEntryCommentSupport.getComments(data);
             if (comments != null) {
                 StringBuilder commentEmailBld = new StringBuilder();
                 StringBuilder commentContentBld = new StringBuilder();
@@ -114,9 +117,13 @@ public abstract class IndexOperation implements Runnable {
                 .getWebsite().getHandle(), Field.Store.YES));
 
         // text, don't index deleted/disabled users of a group blog
-        if (data.getCreator() != null) {
-            doc.add(new TextField(FieldConstants.USERNAME, data.getCreator()
-                    .getUserName().toLowerCase(), Field.Store.YES));
+        try {
+            User creator = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(data.getCreatorUserName());
+            if (creator != null) {
+                doc.add(new TextField(FieldConstants.USERNAME, creator.getUserName().toLowerCase(), Field.Store.YES));
+            }
+        } catch (Exception e) {
+            // ignore
         }
 
         // text

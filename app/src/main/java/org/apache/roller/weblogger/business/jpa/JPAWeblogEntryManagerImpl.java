@@ -51,6 +51,7 @@ import org.apache.roller.weblogger.pojos.WeblogEntryAttribute;
 import org.apache.roller.weblogger.pojos.StatCountCountComparator;
 import org.apache.roller.util.DateUtil;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 
 
 /**
@@ -178,78 +179,74 @@ public class JPAWeblogEntryManagerImpl implements WeblogEntryManager {
      * @inheritDoc
      */
     // TODO: perhaps the createAnchor() and queuePings() items should go outside this method?
+
     @Override
-    public void saveWeblogEntry(WeblogEntry entry) throws WebloggerException {
-
-        if (entry.getCategory() == null) {
-            // Entry is invalid without category, so use weblog client cat
-            WeblogCategory cat = entry.getWebsite().getBloggerCategory();
-            if (cat == null) {
-                // Still no category, so use first one found
-                cat = entry.getWebsite().getWeblogCategories().iterator().next();
-            }
-            entry.setCategory(cat);
-        }
-
-        // Entry is invalid without local. if missing use weblog default
-        if (entry.getLocale() == null) {
-            entry.setLocale(entry.getWebsite().getLocale());
-        }
-        
-        if (entry.getAnchor() == null || entry.getAnchor().isBlank()) {
-            entry.setAnchor(this.createAnchor(entry));
-        }
-        
-        if (entry.isPublished()) {
-            // tag aggregates are updated only when entry published in order for
-            // tag cloud counts to match published articles
-            if (entry.getRefreshAggregates()) {
-                // blog entry wasn't published before, so all tags need to be incremented
-                for (WeblogEntryTag tag : entry.getTags()) {
-                    updateTagCount(tag.getName(), entry.getWebsite(), 1);
-                }
-            } else {
-                // only new tags need to be incremented
-                for (WeblogEntryTag tag : entry.getAddedTags()) {
-                    updateTagCount(tag.getName(), entry.getWebsite(), 1);
-                }
-            }
-        } else {
-            if (entry.getRefreshAggregates()) {
+	   public void saveWeblogEntry(WeblogEntry entry) throws WebloggerException { 
+        if (entry.getCategory() == null) { 
+            // Entry is invalid without category, so use weblog client cat 
+            WeblogCategory cat = entry.getWebsite().getBloggerCategory(); 
+            if (cat == null) { 
+                // Still no category, so use first one found 
+                cat = entry.getWebsite().getWeblogCategories().iterator().next(); 
+            } 
+                entry.setCategory(cat); 
+        } 
+        // Entry is invalid without local. if missing use weblog default 
+        if (entry.getLocale() == null) { 
+            entry.setLocale(entry.getWebsite().getLocale()); 
+        } 
+        if (entry.getAnchor() == null || entry.getAnchor().isBlank()) { 
+            entry.setAnchor(this.createAnchor(entry)); 
+        } 
+        if (entry.isPublished()) { 
+            // tag aggregates are updated only when entry published in order for 
+            // tag cloud counts to match published articles 
+            if (entry.getRefreshAggregates()) { 
+                // blog entry wasn't published before, so all tags need to be incremented 
+                for (WeblogEntryTag tag : entry.getTags()) { 
+                    updateTagCount(tag.getName(), entry.getWebsite(), 1); 
+                } 
+            } 
+            else { 
+                // only new tags need to be incremented 
+                for (WeblogEntryTag tag : entry.getAddedTags()) { 
+                    updateTagCount(tag.getName(), entry.getWebsite(), 1); 
+                } 
+            } 
+        } 
+        else { 
+            if (entry.getRefreshAggregates()) { 
                 // blog entry no longer published so need to reduce aggregate count
-                for (WeblogEntryTag tag : entry.getTags()) {
-                    updateTagCount(tag.getName(), entry.getWebsite(), -1);
-                }
-            }
-        }
-
-        for (WeblogEntryTag tag : entry.getRemovedTags()) {
-            removeWeblogEntryTag(tag);
-        }
-
-        // if the entry was published to future, set status as SCHEDULED
-        // we only consider an entry future published if it is scheduled
-        // more than 1 minute into the future
-        if (PubStatus.PUBLISHED.equals(entry.getStatus()) &&
-                entry.getPubTime().after(new Date(System.currentTimeMillis() + RollerConstants.MIN_IN_MS))) {
-            entry.setStatus(PubStatus.SCHEDULED);
-        }
-        
+                for (WeblogEntryTag tag : entry.getTags()) { 
+                    updateTagCount(tag.getName(), entry.getWebsite(), -1); 
+                } 
+            } 
+        } 
+        for (WeblogEntryTag tag : entry.getRemovedTags()) { 
+            removeWeblogEntryTag(tag); 
+        } 
+        // if the entry was published to future, set status as SCHEDULED 
+        // we only consider an entry future published if it is scheduled 
+        // more than 1 minute into the future 
+        if (PubStatus.PUBLISHED.equals(entry.getStatus()) && 
+        entry.getPubTime().after(new Date(System.currentTimeMillis() + RollerConstants.MIN_IN_MS))) { 
+            entry.setStatus(PubStatus.SCHEDULED); 
+        } 
         // Store value object (creates new or updates existing)
         entry.setUpdateTime(new Timestamp(new Date().getTime()));
-        
-        this.strategy.store(entry);
-        
-        // update weblog last modified date.  date updated by saveWebsite()
-        if(entry.isPublished()) {
-            roller.getWeblogManager().saveWeblog(entry.getWebsite());
-        }
-        
-        if(entry.isPublished()) {
-            // Queue applicable pings for this update.
-            roller.getAutopingManager().queueApplicableAutoPings(entry);
-        }
+        this.strategy.store(entry); 
+        // update weblog last modified date. date updated by saveWebsite() 
+        if(entry.isPublished()) { 
+            roller.getWeblogManager().saveWeblog(entry.getWebsite()); 
+        } 
+        if(entry.isPublished()) { 
+            // Queue applicable pings for this update. 
+            roller.getAutopingManager().queueApplicableAutoPings(entry); 
+        } 
     }
+
+
+
     
     /**
      * @inheritDoc
@@ -574,7 +571,7 @@ public class JPAWeblogEntryManagerImpl implements WeblogEntryManager {
     @Override
     public String createAnchor(WeblogEntry entry) throws WebloggerException {
         // Check for uniqueness of anchor
-        String base = entry.createAnchorBase();
+        String base = WeblogEntryPermalinkSupport.createAnchorBase(entry);
         String name = base;
         int count = 0;
         
@@ -1382,12 +1379,80 @@ public class JPAWeblogEntryManagerImpl implements WeblogEntryManager {
      * @param expression The given expression
      * @return the whereClause.
      */
+    /**
+     * Appends given expression to given whereClause. If whereClause already
+     * has other conditions, an " AND " is also appended before appending
+     * the expression
+     * @param whereClause The given where Clauuse
+     * @param expression The given expression
+     * @return the whereClause.
+     */
     private static StringBuilder appendConjuctionToWhereclause(StringBuilder whereClause,
             String expression) {
         if (whereClause.length() != 0 && expression.length() != 0) {
             whereClause.append(" AND ");
         }
         return whereClause.append(expression);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void removeWeblogEntryTags(Weblog weblog) throws WebloggerException {
+        // remove tags
+        TypedQuery<WeblogEntryTag> tagQuery = strategy.getNamedQuery("WeblogEntryTag.getByWeblog",
+                WeblogEntryTag.class);
+        tagQuery.setParameter(1, weblog);
+        List<WeblogEntryTag> results = tagQuery.getResultList();
+
+        for (WeblogEntryTag tagData : results) {
+            if (tagData.getWeblogEntry() != null) {
+                tagData.getWeblogEntry().getTags().remove(tagData);
+            }
+            this.strategy.remove(tagData);
+        }
+
+        // remove site tag aggregates
+        List<TagStat> tags = getTags(weblog, null, null, 0, -1);
+        updateTagAggregates(tags);
+
+        // delete all weblog tag aggregates
+        Query removeAggs = strategy.getNamedUpdate(
+                "WeblogEntryTagAggregate.removeByWeblog");
+        removeAggs.setParameter(1, weblog);
+        removeAggs.executeUpdate();
+
+        // delete all bad counts
+        Query removeCounts = strategy.getNamedUpdate(
+                "WeblogEntryTagAggregate.removeByTotalLessEqual");
+        removeCounts.setParameter(1, 0);
+        removeCounts.executeUpdate();
+    }
+
+    protected void updateTagAggregates(List<TagStat> tags) throws WebloggerException {
+        for (TagStat stat : tags) {
+            TypedQuery<WeblogEntryTagAggregate> query = strategy.getNamedQueryCommitFirst(
+                    "WeblogEntryTagAggregate.getByName&WebsiteNullOrderByLastUsedDesc", WeblogEntryTagAggregate.class);
+            query.setParameter(1, stat.getName());
+            try {
+                WeblogEntryTagAggregate agg = query.getSingleResult();
+                agg.setTotal(agg.getTotal() - stat.getCount());
+            } catch (NoResultException ignored) {
+                // nothing to update
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void removeWeblogCategories(Weblog weblog) throws WebloggerException {
+        // delete all weblog categories
+        Query removeCategories = strategy.getNamedUpdate("WeblogCategory.removeByWeblog");
+        removeCategories.setParameter(1, weblog);
+        removeCategories.executeUpdate();
     }
     
 }

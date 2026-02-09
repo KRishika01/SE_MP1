@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.SharedTheme;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
@@ -83,7 +84,8 @@ public class StylesheetEdit extends UIAction {
             }
 
             WeblogManager weblogManager = WebloggerFactory.getWeblogger().getWeblogManager();
-            setTemplate(weblogManager.getTemplateByLink(getActionWeblog(), stylesheet.getLink()));
+            WeblogTemplateManager templateManager = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
+            setTemplate(templateManager.getTemplateByLink(getActionWeblog(), stylesheet.getLink()));
 
         } catch (WebloggerException ex) {
             log.error("Error looking up stylesheet on weblog - " + getActionWeblog().getHandle(), ex);
@@ -119,6 +121,7 @@ public class StylesheetEdit extends UIAction {
     public String copyStylesheet() {
 
         WeblogManager weblogManager = WebloggerFactory.getWeblogger().getWeblogManager();
+        WeblogTemplateManager templateManager = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
         ThemeManager themeManager = WebloggerFactory.getWeblogger().getThemeManager();
 
         ThemeTemplate stylesheet = null;
@@ -133,7 +136,7 @@ public class StylesheetEdit extends UIAction {
 
         log.debug("custom stylesheet path is - " + stylesheet.getLink());
         try {
-            setTemplate( weblogManager.getTemplateByLink(getActionWeblog(), stylesheet.getLink()));
+            setTemplate( templateManager.getTemplateByLink(getActionWeblog(), stylesheet.getLink()));
 
             if (getTemplate() == null) {
                 log.debug("custom stylesheet not found, creating it");
@@ -156,7 +159,7 @@ public class StylesheetEdit extends UIAction {
                         stylesheetTmpl, RenditionType.STANDARD);
                     standardRendition.setTemplate(sCode.getTemplate());
                     standardRendition.setTemplateLanguage(sCode.getTemplateLanguage());
-                    weblogManager.saveTemplateRendition(standardRendition);
+                    templateManager.saveTemplateRendition(standardRendition);
                 }
 
                 TemplateRendition mCode = stylesheet.getTemplateRendition(RenditionType.MOBILE);
@@ -165,10 +168,10 @@ public class StylesheetEdit extends UIAction {
                         new CustomTemplateRendition(stylesheetTmpl, RenditionType.MOBILE);
                     mobileRendition.setTemplate(mCode.getTemplate());
                     mobileRendition.setTemplateLanguage(mCode.getTemplateLanguage());
-                    weblogManager.saveTemplateRendition(mobileRendition);
+                    templateManager.saveTemplateRendition(mobileRendition);
                 }
 
-                weblogManager.saveTemplate(stylesheetTmpl);
+                templateManager.saveTemplate(stylesheetTmpl);
                 setTemplate(stylesheetTmpl);
 
                 WebloggerFactory.getWeblogger().flush();
@@ -192,6 +195,7 @@ public class StylesheetEdit extends UIAction {
     public String save() {
 
         WeblogManager weblogManager = WebloggerFactory.getWeblogger().getWeblogManager();
+        WeblogTemplateManager templateManager = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
 
         if (!hasActionErrors()) {
             try {
@@ -205,23 +209,23 @@ public class StylesheetEdit extends UIAction {
                     // if we have a template, then set it
                     CustomTemplateRendition tc = stylesheet.getTemplateRendition(RenditionType.STANDARD);
                     tc.setTemplate(getContentsStandard());
-                    weblogManager.saveTemplateRendition(tc);
+                    templateManager.saveTemplateRendition(tc);
 
                 } else {
                     // otherwise create it, then set it
                     CustomTemplateRendition tc = new CustomTemplateRendition( stylesheet, RenditionType.STANDARD);
                     tc.setTemplate("");
-                    weblogManager.saveTemplateRendition(tc);
+                    templateManager.saveTemplateRendition(tc);
                 }
 
                 if (stylesheet.getTemplateRendition(RenditionType.MOBILE) != null) {
                     CustomTemplateRendition tc = stylesheet.getTemplateRendition(RenditionType.MOBILE);
                     tc.setTemplate(getContentsMobile());
-                    weblogManager.saveTemplateRendition(tc);
+                    templateManager.saveTemplateRendition(tc);
                 }
 
                 // save template and flush
-                WebloggerFactory.getWeblogger().getWeblogManager().saveTemplate(stylesheet);
+                WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplate(stylesheet);
 
                 WebloggerFactory.getWeblogger().flush();
 
@@ -246,6 +250,7 @@ public class StylesheetEdit extends UIAction {
     public String revert() {
 
         WeblogManager weblogManager = WebloggerFactory.getWeblogger().getWeblogManager();
+        WeblogTemplateManager templateManager = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
 
         if (isSharedTheme() && !hasActionErrors()) {
             try {
@@ -268,7 +273,7 @@ public class StylesheetEdit extends UIAction {
                         stylesheet.getTemplateRendition(RenditionType.STANDARD);
 
                     existingTemplateCode.setTemplate(templateCode.getTemplate());
-                    weblogManager.saveTemplateRendition(existingTemplateCode);
+                    templateManager.saveTemplateRendition(existingTemplateCode);
                 }
                 if (stylesheet.getTemplateRendition(RenditionType.MOBILE) != null) {
 
@@ -281,7 +286,7 @@ public class StylesheetEdit extends UIAction {
                 }
 
                 // save template and flush
-                weblogManager.saveTemplate(stylesheet);
+                templateManager.saveTemplate(stylesheet);
                 WebloggerFactory.getWeblogger().flush();
 
                 // notify caches
@@ -306,9 +311,10 @@ public class StylesheetEdit extends UIAction {
             try {
                 // Delete template and flush
                 WeblogManager weblogManager = WebloggerFactory.getWeblogger().getWeblogManager();
+                WeblogTemplateManager templateManager = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
 
                 // Remove template and page codes
-                weblogManager.removeTemplate(template);
+                templateManager.removeTemplate(template);
 
                 Weblog weblog = getActionWeblog();
 

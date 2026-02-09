@@ -42,7 +42,11 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MailProvider;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.business.startup.WebloggerStartup;
+import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
@@ -85,9 +89,15 @@ public class MailUtil {
         
         try {
             WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
+            WeblogQueryManager wqm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
             
-            String userName = entry.getCreator().getUserName();
-            String from = entry.getCreator().getEmailAddress();
+            
+            User creator = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(entry.getCreatorUserName());
+            String userName = creator != null ? creator.getUserName() : entry.getCreatorUserName();
+            String from = creator != null ? creator.getEmailAddress() : null;
+            if (from == null) {
+                from = entry.getWebsite().getEmailAddress();
+            }
             String cc[] = new String[] {from};
             String bcc[] = new String[0];
             String to[];
@@ -96,7 +106,7 @@ public class MailUtil {
             
             // list of enabled website authors and admins
             List<String> reviewers = new ArrayList<>();
-            List<User> websiteUsers = wmgr.getWeblogUsers(entry.getWebsite(), true);
+            List<User> websiteUsers = wqm.getWeblogUsers(entry.getWebsite(), true);
             
             // build list of reviewers (website users with author permission)
             for (User websiteUser : websiteUsers) {
@@ -261,7 +271,12 @@ public class MailUtil {
 
         WeblogEntry entry = commentObject.getWeblogEntry();
         Weblog weblog = entry.getWebsite();
-        User user = entry.getCreator();
+        User user = null;
+        try {
+            user = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(entry.getCreatorUserName());
+        } catch (Exception e) {
+            log.error("Error getting creator for entry", e);
+        }
         
         // Only send email if email notification is enabled, or a pending message that needs moderation.
         if (!commentObject.getPending()) {
@@ -284,7 +299,7 @@ public class MailUtil {
             log.debug("Sending notification email to all subscribers");
 
             // Get all the subscribers to this comment thread
-            List<WeblogEntryComment> comments = entry.getComments(true, true);
+            List<WeblogEntryComment> comments = WeblogEntryCommentSupport.getComments(entry, true, true);
             for (WeblogEntryComment comment : comments) {
                 if (!StringUtils.isEmpty(comment.getEmail())) {
                     // if user has commented twice, count the most recent notify setting
@@ -520,7 +535,12 @@ public class MailUtil {
         
         WeblogEntry entry = cd.getWeblogEntry();
         Weblog weblog = entry.getWebsite();
-        User user = entry.getCreator();
+        User user = null;
+        try {
+            user = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(entry.getCreatorUserName());
+        } catch (Exception e) {
+            log.error("Error getting creator for entry", e);
+        }
         
         // use either the weblog configured from address or the site configured from address
         String from = weblog.getEmailAddress();

@@ -146,11 +146,11 @@ public class BloggerAPIHandler extends BaseAPIHandler {
         }
         
         try {
-            WeblogTemplate template = WebloggerFactory.getWeblogger().getWeblogManager().getTemplate(templateType);
+            WeblogTemplate template = WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplate(templateType);
             CustomTemplateRendition ctr = template.getTemplateRendition(RenditionType.STANDARD);
             if (ctr != null) {
                 ctr.setTemplate(templateData);
-                WebloggerFactory.getWeblogger().getWeblogManager().saveTemplateRendition(ctr);
+                WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplateRendition(ctr);
                 flushPageCache(template.getWeblog());
                 return true;
             } else {
@@ -190,7 +190,7 @@ public class BloggerAPIHandler extends BaseAPIHandler {
         
         try {
             CustomTemplateRendition ctr = null;
-            WeblogTemplate template = WebloggerFactory.getWeblogger().getWeblogManager().getTemplate(templateType);
+            WeblogTemplate template = WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplate(templateType);
             if (template != null) {
                 ctr = template.getTemplateRendition(RenditionType.STANDARD);
             }
@@ -286,7 +286,7 @@ public class BloggerAPIHandler extends BaseAPIHandler {
                 User user = umgr.getUserByUserName(userid);
                 
                 // get list of user's enabled websites
-                List<Weblog> websites = WebloggerFactory.getWeblogger().getWeblogManager().getUserWeblogs(user, true);
+                List<Weblog> websites = WebloggerFactory.getWeblogger().getWeblogQueryManager().getUserWeblogs(user, true);
                 for (Weblog website : websites) {
                     // only include weblog's that have client API support enabled
                     if (Boolean.TRUE.equals(website.getEnableBloggerApi())) {

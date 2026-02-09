@@ -79,6 +79,12 @@ public interface PingQueueManager {
     
     
     /**
+     * Remove all queue entries for a specific weblog.
+     * @param weblog the weblog to remove entries for.
+     */
+    void removeQueueEntries(org.apache.roller.weblogger.pojos.Weblog weblog) throws WebloggerException;
+
+    /**
      * Release all resources associated with Roller session.
      */
     void release();

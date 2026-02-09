@@ -148,6 +148,12 @@ public interface BookmarkManager {
     
     
     /**
+     * Remove all folders for a weblog.
+     * @param weblog The weblog to remove folders from.
+     */
+    void removeAllFolders(Weblog weblog) throws WebloggerException;
+
+    /**
      * Release all resources associated with Roller session.
      */
     void release();

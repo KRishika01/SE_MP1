@@ -52,6 +52,12 @@ import org.apache.roller.weblogger.business.search.lucene.LuceneIndexManager;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.business.themes.ThemeManagerImpl;
 import org.apache.roller.weblogger.planet.business.WebloggerRomeFeedFetcher;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
+import org.apache.roller.weblogger.business.jpa.JPAWeblogTemplateManagerImpl;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
+import org.apache.roller.weblogger.business.jpa.JPAWeblogQueryManagerImpl;
+
+
 
 
 /**
@@ -90,6 +96,9 @@ public class JPAWebloggerModule implements Module {
 		binder.bind(Planet.class).to(              JPAPlanetImpl.class);
         binder.bind(PlanetManager.class).to(       JPAPlanetManagerImpl.class);   
         binder.bind(FeedFetcher.class).to(         WebloggerRomeFeedFetcher.class);
+
+        binder.bind(WeblogTemplateManager.class).to(JPAWeblogTemplateManagerImpl.class);
+        binder.bind(WeblogQueryManager.class).to(JPAWeblogQueryManagerImpl.class);
     }
     
 }

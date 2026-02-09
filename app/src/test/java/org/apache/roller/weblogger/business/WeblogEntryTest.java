@@ -21,6 +21,8 @@ package org.apache.roller.weblogger.business;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.TestUtils;
+import org.apache.roller.weblogger.business.support.WeblogEntryAttributeSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryTagSupport;
 import org.apache.roller.weblogger.pojos.*;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +57,7 @@ public class WeblogEntryTest  {
         TestUtils.setupWeblogger();
         
         assertEquals(0L,
-           WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
+           WebloggerFactory.getWeblogger().getWeblogQueryManager().getWeblogCount());
 
         try {
             testUser = TestUtils.setupUser("entryTestUser");
@@ -362,7 +364,7 @@ public class WeblogEntryTest  {
             testEntry.setCategory(testWeblog.getWeblogCategory("General"));
 
             // shortcut
-            testEntry.addTag("testTag");
+            WeblogEntryTagSupport.addTag(testEntry, "testTag");
 
             // create a weblog entry
             mgr.saveWeblogEntry(testEntry);
@@ -400,14 +402,14 @@ public class WeblogEntryTest  {
         testWeblog = TestUtils.getManagedWebsite(testWeblog);
         testUser = TestUtils.getManagedUser(testUser);
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-        entry.addTag("testTag");
-        entry.addTag("whateverTag");
+        WeblogEntryTagSupport.addTag(entry, "testTag");
+        WeblogEntryTagSupport.addTag(entry, "whateverTag");
         String id = entry.getId();
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
         entry = mgr.getWeblogEntry(id);
-        entry.addTag("testTag2");
+        WeblogEntryTagSupport.addTag(entry, "testTag2");
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
@@ -428,13 +430,13 @@ public class WeblogEntryTest  {
         testWeblog = TestUtils.getManagedWebsite(testWeblog);
         testUser = TestUtils.getManagedUser(testUser);
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-        entry.addTag("testTag");
+        WeblogEntryTagSupport.addTag(entry, "testTag");
         String id = entry.getId();
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
         entry = mgr.getWeblogEntry(id);
-        entry.addTag("testTag");
+        WeblogEntryTagSupport.addTag(entry, "testTag");
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
@@ -455,8 +457,8 @@ public class WeblogEntryTest  {
             testWeblog = TestUtils.getManagedWebsite(testWeblog);
             testUser = TestUtils.getManagedUser(testUser);
             WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-            entry.addTag("testTag");
-            entry.addTag("testTag2");
+            WeblogEntryTagSupport.addTag(entry, "testTag");
+            WeblogEntryTagSupport.addTag(entry, "testTag2");
             String id = entry.getId();
             mgr.saveWeblogEntry(entry);
             TestUtils.endSession(true);
@@ -466,7 +468,7 @@ public class WeblogEntryTest  {
             TestUtils.endSession(true);
 
             entry = mgr.getWeblogEntry(id);
-            entry.setTagsAsString("");
+            WeblogEntryTagSupport.setTagsAsString(entry, "");
             mgr.saveWeblogEntry(entry);
             TestUtils.endSession(true);
 
@@ -499,14 +501,14 @@ public class WeblogEntryTest  {
         // setup some test entries to use
         WeblogEntry entry = TestUtils.setupWeblogEntry("tagsExistEntry1", testWeblog, testUser);
         String id1 = entry.getId();
-        entry.addTag("blahTag");
-        entry.addTag("fooTag");
+        WeblogEntryTagSupport.addTag(entry, "blahTag");
+        WeblogEntryTagSupport.addTag(entry, "fooTag");
         mgr.saveWeblogEntry(entry);
 
         WeblogEntry entry2 = TestUtils.setupWeblogEntry("tagsExistEntry2", weblog, testUser);
         String id2 = entry2.getId();
-        entry2.addTag("aaaTag");
-        entry2.addTag("bbbTag");
+        WeblogEntryTagSupport.addTag(entry2, "aaaTag");
+        WeblogEntryTagSupport.addTag(entry2, "bbbTag");
         mgr.saveWeblogEntry(entry2);
         TestUtils.endSession(true);
         
@@ -547,7 +549,7 @@ public class WeblogEntryTest  {
             testUser = TestUtils.getManagedUser(testUser);
             WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
             String id = entry.getId();
-            entry.addTag("testTag");
+            WeblogEntryTagSupport.addTag(entry, "testTag");
             mgr.saveWeblogEntry(entry);
             TestUtils.endSession(true);
 
@@ -584,7 +586,7 @@ public class WeblogEntryTest  {
         testWeblog = TestUtils.getManagedWebsite(testWeblog);
         testUser = TestUtils.getManagedUser(testUser);
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-        entry.addTag("testTag");
+        WeblogEntryTagSupport.addTag(entry, "testTag");
         String id = entry.getId();
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
@@ -619,8 +621,8 @@ public class WeblogEntryTest  {
         testWeblog = TestUtils.getManagedWebsite(testWeblog);
         testUser = TestUtils.getManagedUser(testUser);
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-        entry.addTag("testWillStayTag");
-        entry.addTag("testTagWillBeRemoved");
+        WeblogEntryTagSupport.addTag(entry, "testWillStayTag");
+        WeblogEntryTagSupport.addTag(entry, "testTagWillBeRemoved");
         String id = entry.getId();
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
@@ -628,7 +630,7 @@ public class WeblogEntryTest  {
         entry = mgr.getWeblogEntry(id);
         assertEquals(2, entry.getTags().size());
 
-        entry.setTagsAsString("testwillstaytag testnewtag testnewtag3");
+        WeblogEntryTagSupport.setTagsAsString(entry, "testwillstaytag testnewtag testnewtag3");
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
@@ -665,8 +667,8 @@ public class WeblogEntryTest  {
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
         String id = entry.getId();
 
-        entry.addTag("testWillStayTag");
-        entry.addTag("testTagWillBeRemoved");
+        WeblogEntryTagSupport.addTag(entry, "testWillStayTag");
+        WeblogEntryTagSupport.addTag(entry, "testTagWillBeRemoved");
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
@@ -680,7 +682,7 @@ public class WeblogEntryTest  {
                 original = tagData.getTime();
         }
 
-        entry.setTagsAsString("testwillstaytag testnewtag testnewtag3");
+        WeblogEntryTagSupport.setTagsAsString(entry, "testwillstaytag testnewtag testnewtag3");
         mgr.saveWeblogEntry(entry);
         TestUtils.endSession(true);
 
@@ -730,14 +732,14 @@ public class WeblogEntryTest  {
 
             // setup some test entries to use
             WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-            entry.addTag("one");
-            entry.addTag("two");
+            WeblogEntryTagSupport.addTag(entry, "one");
+            WeblogEntryTagSupport.addTag(entry, "two");
             mgr.saveWeblogEntry(entry);
 
             entry = TestUtils.setupWeblogEntry("entry2", testWeblog, testUser);
-            entry.addTag("one");
-            entry.addTag("two");
-            entry.addTag("three");
+            WeblogEntryTagSupport.addTag(entry, "one");
+            WeblogEntryTagSupport.addTag(entry, "two");
+            WeblogEntryTagSupport.addTag(entry, "three");
             mgr.saveWeblogEntry(entry);
 
             TestUtils.endSession(true);
@@ -763,9 +765,9 @@ public class WeblogEntryTest  {
             testWeblog2 = TestUtils.getManagedWebsite(testWeblog2);
             testUser = TestUtils.getManagedUser(testUser);
             entry = TestUtils.setupWeblogEntry("entry3", testWeblog2, testUser);
-            entry.addTag("one");
-            entry.addTag("three");
-            entry.addTag("four");
+            WeblogEntryTagSupport.addTag(entry, "one");
+            WeblogEntryTagSupport.addTag(entry, "three");
+            WeblogEntryTagSupport.addTag(entry, "four");
             mgr.saveWeblogEntry(entry);
 
             TestUtils.endSession(true);
@@ -792,7 +794,7 @@ public class WeblogEntryTest  {
 
             testWeblog = TestUtils.getManagedWebsite(testWeblog);
             entry = mgr.getWeblogEntryByAnchor(testWeblog, "entry2");
-            entry.setTagsAsString("one three five");
+            WeblogEntryTagSupport.setTagsAsString(entry, "one three five");
             mgr.saveWeblogEntry(entry);
 
             TestUtils.endSession(true);
@@ -874,9 +876,9 @@ public class WeblogEntryTest  {
 
         // setup some test entries to use
         WeblogEntry entry = TestUtils.setupWeblogEntry("entry1", testWeblog, testUser);
-        entry.addTag("one");
-        entry.addTag("two");
-        entry.addTag("ONE");
+        WeblogEntryTagSupport.addTag(entry, "one");
+        WeblogEntryTagSupport.addTag(entry, "two");
+        WeblogEntryTagSupport.addTag(entry, "ONE");
         mgr.saveWeblogEntry(entry);
 
         TestUtils.endSession(true);
@@ -898,8 +900,8 @@ public class WeblogEntryTest  {
 
         // now add another entry in another blog
         entry = TestUtils.setupWeblogEntry("entry3", testWeblog2, testUser);
-        entry.addTag("ONE");
-        entry.addTag("three");
+        WeblogEntryTagSupport.addTag(entry, "ONE");
+        WeblogEntryTagSupport.addTag(entry, "three");
         mgr.saveWeblogEntry(entry);
         
         TestUtils.endSession(true);
@@ -958,9 +960,9 @@ public class WeblogEntryTest  {
         TestUtils.endSession(true);
 
         testEntry = TestUtils.getManagedWeblogEntry(testEntry);
-        testEntry.putEntryAttribute("att_mediacast_url", "http://podcast-schmodcast.com");
-        testEntry.putEntryAttribute("att_mediacast_type", "application/drivel");
-        testEntry.putEntryAttribute("att_mediacast_length", "3141592654");
+        WeblogEntryAttributeSupport.putEntryAttribute(testEntry, "att_mediacast_url", "http://podcast-schmodcast.com");
+        WeblogEntryAttributeSupport.putEntryAttribute(testEntry, "att_mediacast_type", "application/drivel");
+        WeblogEntryAttributeSupport.putEntryAttribute(testEntry, "att_mediacast_length", "3141592654");
                     
         TestUtils.endSession(true);
         
@@ -970,12 +972,12 @@ public class WeblogEntryTest  {
         assertEquals(testEntry, entry);
         assertNotNull(entry.getEntryAttributes());
         assertEquals(3, entry.getEntryAttributes().size());
-        assertNotNull(entry.findEntryAttribute("att_mediacast_url"));
-        assertNotNull(entry.findEntryAttribute("att_mediacast_type"));
-        assertNotNull(entry.findEntryAttribute("att_mediacast_length"));
-        assertEquals("http://podcast-schmodcast.com", entry.findEntryAttribute("att_mediacast_url"));
-        assertEquals("application/drivel", entry.findEntryAttribute("att_mediacast_type"));
-        assertEquals("3141592654", entry.findEntryAttribute("att_mediacast_length"));
+        assertNotNull(WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_url"));
+        assertNotNull(WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_type"));
+        assertNotNull(WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_length"));
+        assertEquals("http://podcast-schmodcast.com", WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_url"));
+        assertEquals("application/drivel", WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_type"));
+        assertEquals("3141592654", WeblogEntryAttributeSupport.findEntryAttribute(entry, "att_mediacast_length"));
         
         // update a weblog entry
         entry.setTitle("testtest");
@@ -1003,6 +1005,7 @@ public class WeblogEntryTest  {
         WeblogEntryManager emgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
         WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        WeblogQueryManager qmgr = WebloggerFactory.getWeblogger().getWeblogQueryManager();
         
         long existingUserCount = umgr.getUserCount() - 1;
         
@@ -1041,7 +1044,7 @@ public class WeblogEntryTest  {
             assertEquals(3L, blog2.getCommentCount());
             assertEquals(5L, emgr.getCommentCount());
 
-            assertEquals(4L, wmgr.getWeblogCount());
+            assertEquals(4L, qmgr.getWeblogCount());
             assertEquals(existingUserCount + 2L, umgr.getUserCount());
             
         } finally {

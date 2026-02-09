@@ -71,6 +71,8 @@ public abstract class WebloggerImpl implements Weblogger {
     private final OAuthManager         oauthManager;
     private final FeedFetcher          feedFetcher;
     private final PlanetManager        planetManager;
+    private final WeblogTemplateManager   weblogTemplateManager;
+    private final WeblogQueryManager       weblogQueryManager;
     
     // url strategy
     private final URLStrategy          urlStrategy;
@@ -97,6 +99,8 @@ public abstract class WebloggerImpl implements Weblogger {
         ThreadManager        threadManager,
         UserManager          userManager,
         WeblogManager        weblogManager,
+        WeblogTemplateManager weblogTemplateManager,
+        WeblogQueryManager     weblogQueryManager,
         WeblogEntryManager   weblogEntryManager,
         OAuthManager         oauthManager,
         FeedFetcher          feedFetcher,
@@ -117,6 +121,8 @@ public abstract class WebloggerImpl implements Weblogger {
         this.threadManager       = threadManager;
         this.userManager         = userManager;
         this.weblogManager       = weblogManager;
+        this.weblogTemplateManager = weblogTemplateManager;
+        this.weblogQueryManager    = weblogQueryManager;
         this.weblogEntryManager  = weblogEntryManager;
         this.oauthManager        = oauthManager;
         this.urlStrategy         = urlStrategy;
@@ -235,6 +241,15 @@ public abstract class WebloggerImpl implements Weblogger {
         return weblogManager;
     }
     
+    @Override
+    public WeblogTemplateManager getWeblogTemplateManager() {
+        return weblogTemplateManager;
+    }
+
+    @Override
+    public WeblogQueryManager getWeblogQueryManager() {
+        return weblogQueryManager;
+    }
 
     /**
      * 
@@ -341,6 +356,8 @@ public abstract class WebloggerImpl implements Weblogger {
             threadManager.release();
             userManager.release();
             weblogManager.release();
+            weblogTemplateManager.release();
+            weblogQueryManager.release();
         } catch(Exception e) {
             log.error("Error calling Roller.release()", e);
         }
