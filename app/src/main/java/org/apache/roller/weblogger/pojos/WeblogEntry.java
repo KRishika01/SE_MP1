@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.util.UUIDGenerator;
 import org.apache.roller.weblogger.WebloggerException;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -661,7 +662,7 @@ public class WeblogEntry implements Serializable {
         // global admins can hack whatever they want
         GlobalPermission adminPerm = 
             new GlobalPermission(Collections.singletonList(GlobalPermission.ADMIN));
-        boolean hasAdmin = WebloggerFactory.getWeblogger().getUserManager()
+        boolean hasAdmin = WebloggerFactory.getWeblogger().getPermissionManager()
             .checkPermission(adminPerm, user); 
         if (hasAdmin) {
             return true;
@@ -670,8 +671,8 @@ public class WeblogEntry implements Serializable {
         WeblogPermission perm;
         try {
             // if user is an author then post status defaults to PUBLISHED, otherwise PENDING
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
-            perm = umgr.getWeblogPermission(getWebsite(), user);
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+            perm = pmgr.getWeblogPermission(getWebsite(), user);
             
         } catch (WebloggerException ex) {
             // security interceptor should ensure this never happens

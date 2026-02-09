@@ -92,7 +92,7 @@ public class PermissionTest  {
         
         log.info("BEGIN");
         
-        UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
+        PermissionManager mgr = WebloggerFactory.getWeblogger().getPermissionManager();
         
         WeblogPermission p1 = new WeblogPermission(testWeblog, testUser, 
             WeblogPermission.ADMIN + "," + WeblogPermission.POST);
@@ -175,7 +175,7 @@ public class PermissionTest  {
         User user = TestUtils.setupUser("testPermissionsLookups");
         TestUtils.endSession(true);
 
-        UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
+        PermissionManager mgr = WebloggerFactory.getWeblogger().getPermissionManager();
         WeblogPermission perm = null;
         List<WeblogPermission> perms = null;
 
@@ -244,16 +244,17 @@ public class PermissionTest  {
 
         WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
         WeblogQueryManager qmgr = WebloggerFactory.getWeblogger().getWeblogQueryManager();
 
         // invite user to weblog
         List<String> actions = new ArrayList<>();
         actions.add(WeblogPermission.EDIT_DRAFT);
-        umgr.grantWeblogPermissionPending(testWeblog, user, actions);
+        pmgr.grantWeblogPermissionPending(testWeblog, user, actions);
         TestUtils.endSession(true);
 
         // accept invitation
-        umgr.confirmWeblogPermission(testWeblog, user);
+        pmgr.confirmWeblogPermission(testWeblog, user);
         TestUtils.endSession(true);
 
         // re-query now that we have changed things
@@ -263,11 +264,11 @@ public class PermissionTest  {
         // assert that invitation list is empty
         testWeblog = TestUtils.getManagedWebsite(testWeblog);
         user = TestUtils.getManagedUser(user);
-        assertTrue(umgr.getPendingWeblogPermissions(user).isEmpty());
-        assertTrue(umgr.getPendingWeblogPermissions(testWeblog).isEmpty());
+        assertTrue(pmgr.getPendingWeblogPermissions(user).isEmpty());
+        assertTrue(pmgr.getPendingWeblogPermissions(testWeblog).isEmpty());
 
         // assert that user is member of weblog
-        assertNotNull(umgr.getWeblogPermission(testWeblog, user));
+        assertNotNull(pmgr.getWeblogPermission(testWeblog, user));
         List<Weblog> weblogs = qmgr.getUserWeblogs(TestUtils.getManagedUser(user), true);
         assertEquals(1, weblogs.size());
         assertEquals(testWeblog.getId(), weblogs.get(0).getId());
@@ -277,7 +278,7 @@ public class PermissionTest  {
         assertEquals(2, users.size());
 
         // test user can be retired from website
-        umgr.revokeWeblogPermission(testWeblog, user, WeblogPermission.ALL_ACTIONS);
+        pmgr.revokeWeblogPermission(testWeblog, user, WeblogPermission.ALL_ACTIONS);
         TestUtils.endSession(true);
 
         //user = umgr.getUser(user.getId());
@@ -302,18 +303,19 @@ public class PermissionTest  {
        
         WeblogPermission perm = 
             new WeblogPermission(testWeblog, testUser, WeblogPermission.POST);
-        UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
-        assertTrue(umgr.checkPermission(perm, testUser));
+        PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+        RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
+        assertTrue(pmgr.checkPermission(perm, testUser));
         
         // we need a second user for this test
         User adminUser = TestUtils.setupUser("adminUser");
-        umgr.grantRole("admin", adminUser);
+        rmgr.grantRole("admin", adminUser);
         TestUtils.endSession(true);
 
         // because adminUser is a global admin, they should have POST perm
         WeblogPermission perm2 = 
             new WeblogPermission(testWeblog, testUser, WeblogPermission.POST);
-        assertTrue(umgr.checkPermission(perm, testUser));
+        assertTrue(pmgr.checkPermission(perm, testUser));
 
         // cleanup the extra test user
         TestUtils.teardownUser(adminUser.getUserName());

@@ -32,6 +32,7 @@ import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.jpa.JPAWeblogEntryManagerImpl;
 import org.apache.roller.weblogger.pojos.TagStat;
@@ -320,8 +321,9 @@ public class SiteModel implements Model {
         try {
             Weblogger roller = WebloggerFactory.getWeblogger();
             UserManager umgr = roller.getUserManager();
+            PermissionManager pmgr = roller.getPermissionManager();
             User user = umgr.getUserByUserName(userName);
-            List<WeblogPermission> perms = umgr.getWeblogPermissions(user);
+            List<WeblogPermission> perms = pmgr.getWeblogPermissions(user);
             for (WeblogPermission perm : perms) {
                 results.add(WeblogWrapper.wrap(perm.getWeblog(), urlStrategy));
             }
@@ -340,8 +342,9 @@ public class SiteModel implements Model {
         try {
             Weblogger roller = WebloggerFactory.getWeblogger();
             UserManager umgr = roller.getUserManager();
+            PermissionManager pmgr = roller.getPermissionManager();
             Weblog website = WebloggerFactory.getWeblogger().getWeblogManager().getWeblogByHandle(handle);
-            List<WeblogPermission> perms = umgr.getWeblogPermissions(website);
+            List<WeblogPermission> perms = pmgr.getWeblogPermissions(website);
             for (WeblogPermission perm : perms) {
                 results.add(UserWrapper.wrap(perm.getUser()));
             }

@@ -33,6 +33,7 @@ import org.apache.roller.planet.pojos.Planet;
 import org.apache.roller.planet.pojos.PlanetGroup;
 import org.apache.roller.planet.pojos.Subscription;
 import org.apache.roller.planet.pojos.SubscriptionEntry;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.BookmarkManager;
 import org.apache.roller.weblogger.business.DatabaseProvider;
 import org.apache.roller.weblogger.business.UserManager;
@@ -307,8 +308,8 @@ public final class TestUtils {
             throws Exception {
 
         // remove all permissions
-        UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-        mgr.revokeWeblogPermission(perm.getWeblog(), perm.getUser(),
+        PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+        pmgr.revokeWeblogPermission(perm.getWeblog(), perm.getUser(),
                 WeblogPermission.ALL_ACTIONS);
 
         // flush to db

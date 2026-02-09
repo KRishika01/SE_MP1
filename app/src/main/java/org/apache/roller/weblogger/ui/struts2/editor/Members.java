@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
@@ -73,8 +74,9 @@ public class Members extends UIAction implements HttpParametersAware {
         int changed = 0;
         List<WeblogPermission> permsList = new ArrayList<>();
         try {
-            UserManager userMgr = WebloggerFactory.getWeblogger().getUserManager();   
-            List<WeblogPermission> permsFromDB = userMgr.getWeblogPermissionsIncludingPending(getActionWeblog());
+            UserManager userMgr = WebloggerFactory.getWeblogger().getUserManager();
+            PermissionManager permMgr = WebloggerFactory.getWeblogger().getPermissionManager();   
+            List<WeblogPermission> permsFromDB = permMgr.getWeblogPermissionsIncludingPending(getActionWeblog());
 
             // we have to copy the permissions list so that when we remove permissions
             // below we don't get ConcurrentModificationExceptions
@@ -118,13 +120,13 @@ public class Members extends UIAction implements HttpParametersAware {
                 if (sval != null) {
                     if (!error && !perms.hasAction(sval)) {
                         if ("-1".equals(sval)) {
-                             userMgr.revokeWeblogPermission(
+                             permMgr.revokeWeblogPermission(
                                     perms.getWeblog(), perms.getUser(), WeblogPermission.ALL_ACTIONS);
                             removed++;
                         } else {
-                            userMgr.revokeWeblogPermission(
+                            permMgr.revokeWeblogPermission(
                                     perms.getWeblog(), perms.getUser(), WeblogPermission.ALL_ACTIONS);
-                            userMgr.grantWeblogPermission(
+                            permMgr.grantWeblogPermission(
                                     perms.getWeblog(), perms.getUser(), Utilities.stringToStringList(sval, ","));
                             changed++;
                         }
@@ -170,7 +172,7 @@ public class Members extends UIAction implements HttpParametersAware {
     
     public List<WeblogPermission> getWeblogPermissions() {
         try {
-            return WebloggerFactory.getWeblogger().getUserManager().getWeblogPermissionsIncludingPending(getActionWeblog());
+            return WebloggerFactory.getWeblogger().getPermissionManager().getWeblogPermissionsIncludingPending(getActionWeblog());
         } catch (WebloggerException ex) {
             // serious problem, but not much we can do here
             log.error("ERROR getting weblog permissions", ex);

@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
@@ -66,10 +67,10 @@ public class MainMenu extends UIAction {
     public String accept() {
         
         try {
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
             WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
             Weblog weblog = wmgr.getWeblog(getInviteId());      
-            umgr.confirmWeblogPermission(weblog, getAuthenticatedUser());
+            pmgr.confirmWeblogPermission(weblog, getAuthenticatedUser());
             WebloggerFactory.getWeblogger().flush();
 
         } catch (WebloggerException ex) {
@@ -84,13 +85,13 @@ public class MainMenu extends UIAction {
     public String decline() {
         
         try {
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
             WeblogManager wmgr = WebloggerFactory.getWeblogger().getWeblogManager();
             Weblog weblog = wmgr.getWeblog(getInviteId());
             String handle = weblog.getHandle();                       
             // TODO ROLLER_2.0: notify inviter that invitee has declined invitation
             // TODO EXCEPTIONS: better exception handling here
-            umgr.declineWeblogPermission(weblog, getAuthenticatedUser());
+            pmgr.declineWeblogPermission(weblog, getAuthenticatedUser());
             WebloggerFactory.getWeblogger().flush();
             addMessage("yourWebsites.declined", handle);
 
@@ -104,8 +105,8 @@ public class MainMenu extends UIAction {
 
     public List<WeblogPermission> getExistingPermissions() {
         try {
-            UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-            return mgr.getWeblogPermissions(getAuthenticatedUser());
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+            return pmgr.getWeblogPermissions(getAuthenticatedUser());
         } catch(Exception e) {
             return Collections.emptyList();
         }
@@ -113,8 +114,8 @@ public class MainMenu extends UIAction {
     
     public List<WeblogPermission> getPendingPermissions() {
         try {
-            UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-            return mgr.getPendingWeblogPermissions(getAuthenticatedUser());
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+            return pmgr.getPendingWeblogPermissions(getAuthenticatedUser());
         } catch(Exception e) {
             return Collections.emptyList();
         }

@@ -36,6 +36,7 @@ import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.apache.roller.util.UUIDGenerator;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.util.I18nUtils;
 import org.apache.roller.weblogger.util.Utilities;
@@ -438,9 +439,9 @@ public class Weblog implements Serializable {
     public boolean hasUserPermissions(User user, List<String> actions) {
         try {
             // look for user in website's permissions
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
             WeblogPermission userPerms = new WeblogPermission(this, user, actions);
-            return umgr.checkPermission(userPerms, user);
+            return pmgr.checkPermission(userPerms, user);
             
         } catch (WebloggerException ex) {
             // something is going seriously wrong, not much we can do here

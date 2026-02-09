@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -78,8 +79,8 @@ public class CreateWeblog extends UIAction {
 
         try {
             if (!WebloggerConfig.getBooleanProperty("groupblogging.enabled")) {
-                UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-                List<WeblogPermission> permissions = mgr.getWeblogPermissions(user);
+                PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+                List<WeblogPermission> permissions = pmgr.getWeblogPermissions(user);
                 if (!permissions.isEmpty()) {
                     // sneaky user trying to get around 1 blog limit that applies
                     // only when group blogging is disabled
@@ -107,8 +108,8 @@ public class CreateWeblog extends UIAction {
         User user = getAuthenticatedUser();
         try {
             if (!WebloggerConfig.getBooleanProperty("groupblogging.enabled")) {
-                UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-                List<WeblogPermission> permissions = mgr.getWeblogPermissions(user);
+                PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+                List<WeblogPermission> permissions = pmgr.getWeblogPermissions(user);
                 if (!permissions.isEmpty()) {
                     // sneaky user trying to get around 1 blog limit that applies
                     // only when group blogging is disabled

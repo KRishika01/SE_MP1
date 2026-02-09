@@ -19,6 +19,7 @@ package org.apache.roller.weblogger.business.jpa;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.pojos.*;
 
@@ -118,7 +119,7 @@ public class JPAWeblogQueryManagerImpl implements WeblogQueryManager {
     @Override
     public List<User> getWeblogUsers(Weblog weblog, boolean enabledOnly) throws WebloggerException {
         List<User> users = new ArrayList<>();
-        List<WeblogPermission> perms = roller.getUserManager().getWeblogPermissions(weblog);
+        List<WeblogPermission> perms = roller.getPermissionManager().getWeblogPermissions(weblog);
         for (WeblogPermission perm : perms) {
             User user = perm.getUser();
             if (user == null) {
@@ -138,7 +139,7 @@ public class JPAWeblogQueryManagerImpl implements WeblogQueryManager {
         if (user == null) {
             return weblogs;
         }
-        List<WeblogPermission> perms = roller.getUserManager().getWeblogPermissions(user);
+        List<WeblogPermission> perms = roller.getPermissionManager().getWeblogPermissions(user);
         for (WeblogPermission perm : perms) {
             Weblog weblog = perm.getWeblog();
             if ((!enabledOnly || weblog.getVisible()) && BooleanUtils.isTrue(weblog.getActive())) {

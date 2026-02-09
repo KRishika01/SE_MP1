@@ -235,7 +235,7 @@ public class User implements Serializable {
     public boolean hasGlobalPermissions(List<String> actions) {
         try {
             GlobalPermission perm = new GlobalPermission(actions);
-            return WebloggerFactory.getWeblogger().getUserManager().checkPermission(perm, this);
+            return WebloggerFactory.getWeblogger().getPermissionManager().checkPermission(perm, this);
         } catch (WebloggerException ex) {
             return false;
         }

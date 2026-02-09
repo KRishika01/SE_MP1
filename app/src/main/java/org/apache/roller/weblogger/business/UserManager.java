@@ -22,14 +22,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.pojos.RollerPermission;
 import org.apache.roller.weblogger.pojos.User;
-import org.apache.roller.weblogger.pojos.Weblog;
-import org.apache.roller.weblogger.pojos.WeblogPermission;
 
 
 /**
- * Interface to user, role and permissions management.
+ * Interface to user management.
+ * Note: For permissions management, use PermissionManager.
+ * Note: For role management, use RoleManager.
  */
 public interface UserManager {
     
@@ -178,146 +177,6 @@ public interface UserManager {
     List<User> getUsersByLetter(char letter, int offset, int length)
         throws WebloggerException;
     
-
-    //-------------------------------------------------------- permissions CRUD
-
-    
-    /**
-     * Return true if user has permission specified.
-     */
-    boolean checkPermission(RollerPermission perm, User user)
-            throws WebloggerException;
-    
-    
-    /**
-     * Grant to user specific actions in a weblog.
-     * (will create new permission record if none already exists)
-     * @param weblog  Weblog to grant permissions in
-     * @param user    User to grant permissions to
-     * @param actions Actions to be granted
-     */
-    void grantWeblogPermission(Weblog weblog, User user, List<String> actions)
-            throws WebloggerException;
-
-    
-    /**
-     * Grant to user specific actions in a weblog, but pending confirmation.
-     * (will create new permission record if none already exists)
-     * @param weblog  Weblog to grant permissions in
-     * @param user    User to grant permissions to
-     * @param actions Actions to be granted
-     */
-    void grantWeblogPermissionPending(Weblog weblog, User user, List<String> actions)
-            throws WebloggerException;
-
-    
-    /**
-     * Confirm user's permission within specified weblog or throw exception if no pending permission exists.
-     * (changes state of permission record to pending = true)
-     * @param weblog  Weblog to grant permissions in
-     * @param user    User to grant permissions to
-     */
-    void confirmWeblogPermission(Weblog weblog, User user)
-            throws WebloggerException;
-
-    
-    /**
-     * Decline permissions within specified weblog or throw exception if no pending permission exists.
-     * (removes permission record)
-     * @param weblog  Weblog to grant permissions in
-     * @param user    User to grant permissions to
-     */
-    void declineWeblogPermission(Weblog weblog, User user)
-            throws WebloggerException;
-
-    
-    /**
-     * Revoke from user specific actions in a weblog.
-     * (if resulting permission has empty removes permission record)
-     * @param weblog  Weblog to grant permissions in
-     * @param user    User to grant permissions to
-     * @param actions Actions to be granted
-     */
-    void revokeWeblogPermission(Weblog weblog, User user, List<String> actions)
-            throws WebloggerException;
-
-    
-    /**
-     * Get all of user's weblog permissions.
-     */
-    List<WeblogPermission> getWeblogPermissions(User user)
-            throws WebloggerException;
-    
-    
-    /**
-     * Get all of user's pending weblog permissions.
-     */
-    List<WeblogPermission> getPendingWeblogPermissions(User user)
-            throws WebloggerException;
-
-    /**
-     * Get all active permissions associated with a weblog.
-     */
-    List<WeblogPermission> getWeblogPermissions(Weblog weblog)
-            throws WebloggerException;
-
-    /**
-     * Get all pending permissions associated with a weblog.
-     */
-    List<WeblogPermission> getPendingWeblogPermissions(Weblog weblog)
-            throws WebloggerException;
-
-    /**
-     * Get all permissions (pending or actual) for a weblog.
-     */
-    List<WeblogPermission> getWeblogPermissionsIncludingPending(Weblog weblog)
-            throws WebloggerException;
-
-
-    /**
-     * Get user's permission within a weblog or null if none.
-     */
-    WeblogPermission getWeblogPermission(Weblog weblog, User user)
-            throws WebloggerException;
-
-    /**
-     * Get user's permission (pending or actual) for a weblog
-     */
-    WeblogPermission getWeblogPermissionIncludingPending(Weblog weblog, User user)
-            throws WebloggerException;
-
-
-    //--------------------------------------------------------------- role CRUD
-
-    
-    /**
-     * Grant role to user.
-     */
-    void grantRole(String roleName, User user) throws WebloggerException;
-    
-    
-    /**
-     * Revoke role from user.
-     */
-    void revokeRole(String roleName, User user) throws WebloggerException;
-
-        
-    /**
-     * Returns true if user has role specified, should be used only for testing.
-     * @deprecated Use checkPermission() instead.
-     */
-    @Deprecated
-    boolean hasRole(String roleName, User user) throws WebloggerException;
-    
-    
-    /**
-     * Get roles associated with user, should be used only for testing.
-     * Get all roles associated with user.
-     * @deprecated Use checkPermission() instead.
-     */
-    @Deprecated
-    List<String> getRoles(User user) throws WebloggerException;
-
     
     /**
      * Release any resources held by manager.

@@ -45,6 +45,20 @@ public interface Weblogger {
     
     /**
      * 
+     * Get RoleManager associated with this Weblogger instance.
+     */
+    RoleManager getRoleManager();
+    
+    
+    /**
+     * 
+     * Get PermissionManager associated with this Weblogger instance.
+     */
+    PermissionManager getPermissionManager();
+    
+    
+    /**
+     * 
      * Get BookmarkManager associated with this Weblogger instance.
      */
     BookmarkManager getBookmarkManager();

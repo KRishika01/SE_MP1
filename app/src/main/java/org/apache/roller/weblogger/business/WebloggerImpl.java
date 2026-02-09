@@ -66,6 +66,8 @@ public abstract class WebloggerImpl implements Weblogger {
     private final ThemeManager         themeManager;
     private final ThreadManager        threadManager;
     private final UserManager          userManager;
+    private final RoleManager          roleManager;
+    private final PermissionManager    permissionManager;
     private final WeblogManager        weblogManager;
     private final WeblogEntryManager   weblogEntryManager;
     private final OAuthManager         oauthManager;
@@ -98,6 +100,8 @@ public abstract class WebloggerImpl implements Weblogger {
         ThemeManager         themeManager,
         ThreadManager        threadManager,
         UserManager          userManager,
+        RoleManager          roleManager,
+        PermissionManager    permissionManager,
         WeblogManager        weblogManager,
         WeblogTemplateManager weblogTemplateManager,
         WeblogQueryManager     weblogQueryManager,
@@ -120,6 +124,8 @@ public abstract class WebloggerImpl implements Weblogger {
         this.themeManager        = themeManager;
         this.threadManager       = threadManager;
         this.userManager         = userManager;
+        this.roleManager         = roleManager;
+        this.permissionManager   = permissionManager;
         this.weblogManager       = weblogManager;
         this.weblogTemplateManager = weblogTemplateManager;
         this.weblogQueryManager    = weblogQueryManager;
@@ -185,6 +191,28 @@ public abstract class WebloggerImpl implements Weblogger {
     @Override
     public UserManager getUserManager() {
         return userManager;
+    }
+    
+    
+    /**
+     * 
+     * 
+     * @see org.apache.roller.weblogger.business.Weblogger#getRoleManager()
+     */
+    @Override
+    public RoleManager getRoleManager() {
+        return roleManager;
+    }
+    
+    
+    /**
+     * 
+     * 
+     * @see org.apache.roller.weblogger.business.Weblogger#getPermissionManager()
+     */
+    @Override
+    public PermissionManager getPermissionManager() {
+        return permissionManager;
     }
     
     
@@ -355,6 +383,8 @@ public abstract class WebloggerImpl implements Weblogger {
             pluginManager.release();
             threadManager.release();
             userManager.release();
+            roleManager.release();
+            permissionManager.release();
             weblogManager.release();
             weblogTemplateManager.release();
             weblogQueryManager.release();

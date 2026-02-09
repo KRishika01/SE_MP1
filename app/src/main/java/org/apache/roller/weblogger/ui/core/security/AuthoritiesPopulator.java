@@ -19,6 +19,7 @@ package org.apache.roller.weblogger.ui.core.security;
 
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.User;
@@ -60,9 +61,10 @@ public class AuthoritiesPopulator implements LdapAuthoritiesPopulator {
         try {
             Weblogger roller = WebloggerFactory.getWeblogger();
             UserManager umgr = roller.getUserManager();
+            RoleManager rmgr = roller.getRoleManager();
             user = umgr.getUserByUserName(username, Boolean.TRUE);
             if (user != null) {
-                roles = umgr.getRoles(user);
+                roles = rmgr.getRoles(user);
             }
         } catch (WebloggerException ex) {
             throw new DataRetrievalFailureException("ERROR in user lookup", ex);

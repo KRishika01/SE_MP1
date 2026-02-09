@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
@@ -66,10 +67,10 @@ public class MemberResign extends UIAction {
      */
     public String resign() {
         try {
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
             // TODO: notify website members that user has resigned
             // TODO EXCEPTIONS: better exception handling
-            umgr.revokeWeblogPermission(getActionWeblog(), getAuthenticatedUser(), WeblogPermission.ALL_ACTIONS);
+            pmgr.revokeWeblogPermission(getActionWeblog(), getAuthenticatedUser(), WeblogPermission.ALL_ACTIONS);
             WebloggerFactory.getWeblogger().flush();
             addMessage("yourWebsites.resigned", getWeblog());
         } catch (WebloggerException ex) {

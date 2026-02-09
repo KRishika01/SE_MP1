@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
 import org.apache.roller.weblogger.pojos.User;
 
 
@@ -75,10 +76,11 @@ class RoleAssignmentRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public boolean isUserInRole(String roleName) {
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
         if (getUserPrincipal() != null) {
             try {
                 User user = umgr.getUserByUserName(getUserPrincipal().getName(), Boolean.TRUE);
-                return umgr.hasRole(roleName, user);
+                return rmgr.hasRole(roleName, user);
             } catch (WebloggerException ex) {
                 log.error("ERROR checking user rile", ex);
             }

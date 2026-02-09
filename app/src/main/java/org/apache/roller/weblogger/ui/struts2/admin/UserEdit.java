@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.config.AuthMethod;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
@@ -194,21 +196,23 @@ public class UserEdit extends UIAction {
 
                 // update Admin role as appropriate
                 boolean hasAdmin = false;
+                RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
+                PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
                 GlobalPermission adminPerm =
                     new GlobalPermission(Collections.singletonList(GlobalPermission.ADMIN));
-                if (mgr.checkPermission(adminPerm, user)) {
+                if (pmgr.checkPermission(adminPerm, user)) {
                     hasAdmin = true;
                 }  
                 // grant/revoke admin role if needed
                 if (hasAdmin && !getBean().isAdministrator()) {
                     if (!isUserEditingSelf()) {
                         // revoke role
-                        mgr.revokeRole("admin", user);
+                        rmgr.revokeRole("admin", user);
                     } else {
                         addError("userAdmin.cantChangeOwnRole");
                     }
                 } else if(!hasAdmin && getBean().isAdministrator()) {
-                    mgr.grantRole("admin", user);
+                    rmgr.grantRole("admin", user);
                 }
                 WebloggerFactory.getWeblogger().flush();
 
@@ -286,7 +290,7 @@ public class UserEdit extends UIAction {
 
     public List<WeblogPermission> getPermissions() {
         try {
-            return WebloggerFactory.getWeblogger().getUserManager().getWeblogPermissions(user);
+            return WebloggerFactory.getWeblogger().getPermissionManager().getWeblogPermissions(user);
         } catch (WebloggerException ex) {
             log.error("ERROR getting permissions for user " + user.getUserName(), ex);
         }

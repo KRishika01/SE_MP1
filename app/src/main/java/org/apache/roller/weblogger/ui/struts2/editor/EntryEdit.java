@@ -34,6 +34,7 @@ import org.apache.roller.util.DateUtil;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.support.WeblogEntryAttributeSupport;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
@@ -219,7 +220,7 @@ public final class EntryEdit extends UIAction {
                 // if user is an admin then apply pinned to main value as well
                 GlobalPermission adminPerm = new GlobalPermission(
                         Collections.singletonList(GlobalPermission.ADMIN));
-                if (WebloggerFactory.getWeblogger().getUserManager()
+                if (WebloggerFactory.getWeblogger().getPermissionManager()
                         .checkPermission(adminPerm, getAuthenticatedUser())) {
                     weblogEntry.setPinnedToMain(getBean().getPinnedToMain());
                 }

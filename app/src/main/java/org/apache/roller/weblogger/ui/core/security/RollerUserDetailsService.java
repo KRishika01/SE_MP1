@@ -12,6 +12,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -95,7 +96,8 @@ public class RollerUserDetailsService implements UserDetailsService {
     }
         
      private List<SimpleGrantedAuthority> getAuthorities(User userData, UserManager umgr) throws WebloggerException {
-         List<String> roles = umgr.getRoles(userData);
+         RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
+         List<String> roles = rmgr.getRoles(userData);
          List<SimpleGrantedAuthority> authorities = new ArrayList<>(roles.size());
          for (String role : roles) {
              authorities.add(new SimpleGrantedAuthority(role));

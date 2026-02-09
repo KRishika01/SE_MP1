@@ -21,6 +21,7 @@ package org.apache.roller.weblogger.ui.struts2.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.pojos.User;
@@ -74,8 +75,9 @@ public class UISecurityInterceptor extends MethodFilterInterceptor {
                 // are we also enforcing global permissions?
                 if (theAction.requiredGlobalPermissionActions() != null
                         && !theAction.requiredGlobalPermissionActions().isEmpty()) {
+                    PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
                     GlobalPermission perm = new GlobalPermission(theAction.requiredGlobalPermissionActions());
-                    if (!umgr.checkPermission(perm, authenticatedUser)) {
+                    if (!pmgr.checkPermission(perm, authenticatedUser)) {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("DENIED: user %s does not have permission = %s",
                                 authenticatedUser.getUserName(), perm));
@@ -102,11 +104,12 @@ public class UISecurityInterceptor extends MethodFilterInterceptor {
                     if (theAction.requiredWeblogPermissionActions() != null
                             && !theAction.requiredWeblogPermissionActions()
                                     .isEmpty()) {
+                        PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
                         WeblogPermission required = new WeblogPermission(
                                 actionWeblog,
                                 theAction.requiredWeblogPermissionActions());
 
-                        if (!umgr.checkPermission(required, authenticatedUser)) {
+                        if (!pmgr.checkPermission(required, authenticatedUser)) {
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("DENIED: user %s does not have required weblog permissions %s",
                                     authenticatedUser.getUserName(), required));

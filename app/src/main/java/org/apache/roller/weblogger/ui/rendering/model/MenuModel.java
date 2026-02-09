@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.ui.core.util.menu.Menu;
 import org.apache.roller.weblogger.ui.core.util.menu.MenuHelper;
@@ -79,7 +80,7 @@ public class MenuModel implements Model {
         try {
             GlobalPermission adminPerm = 
                 new GlobalPermission(Collections.singletonList(GlobalPermission.ADMIN));
-            boolean hasAdmin = WebloggerFactory.getWeblogger().getUserManager()
+            boolean hasAdmin = WebloggerFactory.getWeblogger().getPermissionManager()
                     .checkPermission(adminPerm, pageRequest.getUser());            
             if (pageRequest.isLoggedIn() && hasAdmin) {
                 return MenuHelper.getMenu("admin", "noAction", pageRequest.getUser(), pageRequest.getWeblog());

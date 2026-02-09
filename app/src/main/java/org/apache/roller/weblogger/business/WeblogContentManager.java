@@ -52,7 +52,7 @@ public class WeblogContentManager {
         // Grant weblog creator ADMIN permission
         List<String> actions = new ArrayList<>();
         actions.add(WeblogPermission.ADMIN);
-        roller.getUserManager().grantWeblogPermission(newWeblog, newWeblog.getCreator(), actions);
+        roller.getPermissionManager().grantWeblogPermission(newWeblog, newWeblog.getCreator(), actions);
 
         // Add default categories
         String cats = WebloggerConfig.getProperty("newuser.categories");
@@ -116,6 +116,7 @@ public class WeblogContentManager {
      */
     public void removeWeblogContents(Weblog weblog) throws WebloggerException {
         UserManager        umgr = roller.getUserManager();
+        PermissionManager  pmgr = roller.getPermissionManager();
         WeblogEntryManager emgr = roller.getWeblogEntryManager();
         BookmarkManager    bmgr = roller.getBookmarkManager();
         AutoPingManager    autoPingMgr = roller.getAutopingManager();
@@ -158,8 +159,8 @@ public class WeblogContentManager {
         mfmgr.removeAllFiles(weblog);
 
         // remove permissions
-        for (WeblogPermission perm : umgr.getWeblogPermissions(weblog)) {
-            umgr.revokeWeblogPermission(perm.getWeblog(), perm.getUser(), WeblogPermission.ALL_ACTIONS);
+        for (WeblogPermission perm : pmgr.getWeblogPermissions(weblog)) {
+            pmgr.revokeWeblogPermission(perm.getWeblog(), perm.getUser(), WeblogPermission.ALL_ACTIONS);
         }
         
         // Final flush to make sure all of the above is committed before returning.
