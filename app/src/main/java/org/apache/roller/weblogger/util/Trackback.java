@@ -37,6 +37,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryRenderSupport;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -105,9 +107,9 @@ public class Trackback {
         
         // Construct data
         String title = entry.getTitle();
-        String excerpt = StringUtils.left( Utilities.removeHTML(entry.getDisplayContent()),
+        String excerpt = StringUtils.left( Utilities.removeHTML(WeblogEntryRenderSupport.displayContent(entry, null)),
                 RollerConstants.TEXTWIDTH_255);
-        String url = entry.getPermalink();
+        String url = WeblogEntryPermalinkSupport.getPermalink(entry);
         String blog_name = entry.getWebsite().getName();
         
         // build trackback post parameters as query string

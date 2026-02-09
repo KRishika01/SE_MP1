@@ -40,6 +40,8 @@ import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.business.search.IndexManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment.ApprovalStatus;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
@@ -222,7 +224,7 @@ public class CommentServlet extends HttpServlet {
             return;
         }
 
-        log.debug("Doing comment posting for entry = " + entry.getPermalink());
+        log.debug("Doing comment posting for entry = " + WeblogEntryPermalinkSupport.getPermalink(entry));
 
         // collect input from request params and construct new comment object
         // fields: name, email, url, content, notify
@@ -276,7 +278,7 @@ public class CommentServlet extends HttpServlet {
 
         // check if comments are allowed for this entry
         // this checks site-wide settings, weblog settings, and entry settings
-        if (!entry.getCommentsStillAllowed() || !entry.isPublished()) {
+        if (!WeblogEntryCommentSupport.getCommentsStillAllowed(entry) || !entry.isPublished()) {
             error = messageUtils.getString("comments.disabled");
 
             // Must have an email and also must be valid

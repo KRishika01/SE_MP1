@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.roller.weblogger.business.URLStrategy;
+import org.apache.roller.weblogger.business.support.WeblogEntryAttributeSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryRenderSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryTagSupport;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.apache.roller.weblogger.pojos.WeblogEntryTagComparator;
@@ -80,7 +85,12 @@ public final class WeblogEntryWrapper {
     
     
     public UserWrapper getCreator() {
-        return UserWrapper.wrap(this.pojo.getCreator());
+        try {
+            return UserWrapper.wrap(org.apache.roller.weblogger.business.WebloggerFactory.getWeblogger()
+                .getUserManager().getUserByUserName(this.pojo.getCreatorUserName()));
+        } catch (Exception e) {
+            return null;
+        }
     }
     
     
@@ -124,7 +134,7 @@ public final class WeblogEntryWrapper {
     
     
     public String findEntryAttribute(String name) {
-        return this.pojo.findEntryAttribute(name);
+        return WeblogEntryAttributeSupport.findEntryAttribute(this.pojo, name);
     }
     
     
@@ -187,12 +197,12 @@ public final class WeblogEntryWrapper {
     
     
     public String getTagsAsString() {
-        return this.pojo.getTagsAsString();
+        return WeblogEntryTagSupport.getTagsAsString(this.pojo);
     }
     
     
     public boolean getCommentsStillAllowed() {
-        return this.pojo.getCommentsStillAllowed();
+        return WeblogEntryCommentSupport.getCommentsStillAllowed(this.pojo);
     }
     
     
@@ -207,36 +217,36 @@ public final class WeblogEntryWrapper {
     
     
     public List<WeblogEntryCommentWrapper> getComments() {
-        return this.pojo.getComments().stream()
+        return WeblogEntryCommentSupport.getComments(this.pojo).stream()
                 .map(comment -> WeblogEntryCommentWrapper.wrap(comment, urlStrategy))
                 .collect(Collectors.toList());
     }
     
     
     public List<WeblogEntryCommentWrapper> getComments(boolean ignoreSpam, boolean approvedOnly) {
-        return this.pojo.getComments(ignoreSpam, approvedOnly).stream()
+        return WeblogEntryCommentSupport.getComments(this.pojo, ignoreSpam, approvedOnly).stream()
                 .map(comment -> WeblogEntryCommentWrapper.wrap(comment, urlStrategy))
                 .collect(Collectors.toList());
     }
     
     
     public int getCommentCount() {
-        return this.pojo.getCommentCount();
+        return WeblogEntryCommentSupport.getCommentCount(this.pojo);
     }
     
     
     public String getPermalink() {
-        return this.pojo.getPermalink();
+        return WeblogEntryPermalinkSupport.getPermalink(this.pojo);
     }
     
     
     public String getPermaLink() {
-        return this.pojo.getPermaLink();
+        return WeblogEntryPermalinkSupport.getPermaLink(this.pojo);
     }
     
     
     public String getCommentsLink() {
-        return this.pojo.getCommentsLink();
+        return WeblogEntryPermalinkSupport.getPermaLink(this.pojo) + "#comments";
     }
     
     
@@ -257,27 +267,27 @@ public final class WeblogEntryWrapper {
     
     // TODO: check this method for safety
     public List<String> getPluginsList() {
-        return this.pojo.getPluginsList();
+        return WeblogEntryRenderSupport.getPluginsList(this.pojo);
     }
     
     
     public String getTransformedText() {
-        return this.pojo.getTransformedText();
+        return WeblogEntryRenderSupport.getTransformedText(this.pojo);
     }
     
     
     public String getTransformedSummary() {
-        return this.pojo.getTransformedSummary();
+        return WeblogEntryRenderSupport.getTransformedSummary(this.pojo);
     }
     
     
     public String displayContent(String readMoreLink) {
-        return this.pojo.displayContent(readMoreLink);
+        return WeblogEntryRenderSupport.displayContent(this.pojo, readMoreLink);
     }
     
     
     public String getDisplayContent() {
-        return this.pojo.getDisplayContent();
+        return WeblogEntryRenderSupport.displayContent(this.pojo, null);
     }
 
 	public String getSearchDescription() {

@@ -51,6 +51,7 @@ import org.apache.roller.weblogger.pojos.WeblogEntryAttribute;
 import org.apache.roller.weblogger.pojos.StatCountCountComparator;
 import org.apache.roller.util.DateUtil;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 
 
 /**
@@ -570,7 +571,7 @@ public class JPAWeblogEntryManagerImpl implements WeblogEntryManager {
     @Override
     public String createAnchor(WeblogEntry entry) throws WebloggerException {
         // Check for uniqueness of anchor
-        String base = entry.createAnchorBase();
+        String base = WeblogEntryPermalinkSupport.createAnchorBase(entry);
         String name = base;
         int count = 0;
         

@@ -34,6 +34,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment.ApprovalStatus;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
@@ -151,7 +152,7 @@ public class TrackbackServlet extends HttpServlet {
         try {            
             // check if trackbacks are allowed for this entry
             // this checks site-wide settings, weblog settings, and entry settings
-            if (entry != null && entry.getCommentsStillAllowed() && entry.isPublished()) {
+            if (entry != null && WeblogEntryCommentSupport.getCommentsStillAllowed(entry) && entry.isPublished()) {
                 
                 // Track trackbacks as comments
                 WeblogEntryComment comment = new WeblogEntryComment();
