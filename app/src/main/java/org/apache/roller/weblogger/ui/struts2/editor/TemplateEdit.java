@@ -58,7 +58,7 @@ public class TemplateEdit extends UIAction {
     @Override
     public void myPrepare() {
         try {
-            setTemplate(WebloggerFactory.getWeblogger().getWeblogManager().getTemplate(getBean().getId()));
+            setTemplate(WebloggerFactory.getWeblogger().getWeblogTemplateManager().getTemplate(getBean().getId()));
         } catch (WebloggerException ex) {
             log.error("Error looking up template - " + getBean().getId(), ex);
         }
@@ -124,7 +124,7 @@ public class TemplateEdit extends UIAction {
                 }
 
                 // save template
-                WebloggerFactory.getWeblogger().getWeblogManager().saveTemplate(templateToSave);
+                WebloggerFactory.getWeblogger().getWeblogTemplateManager().saveTemplate(templateToSave);
                 log.debug("Saved template: " + templateToSave.getId());
 
                 //flush
@@ -151,7 +151,7 @@ public class TemplateEdit extends UIAction {
         // if name changed make sure there isn't a conflict
         if (!getTemplate().getName().equals(getBean().getName())) {
             try {
-                if (WebloggerFactory.getWeblogger().getWeblogManager()
+                if (WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                         .getTemplateByName(getActionWeblog(), getBean().getName()) != null) {
                     addError("pagesForm.error.alreadyExists", getBean().getName());
                 }
@@ -164,7 +164,7 @@ public class TemplateEdit extends UIAction {
         if (!StringUtils.isEmpty(getBean().getLink()) &&
                 !getBean().getLink().equals(getTemplate().getLink())) {
             try {
-                if (WebloggerFactory.getWeblogger().getWeblogManager()
+                if (WebloggerFactory.getWeblogger().getWeblogTemplateManager()
                         .getTemplateByLink(getActionWeblog(), getBean().getLink()) != null) {
                     addError("pagesForm.error.alreadyExists", getBean().getLink());
                 }

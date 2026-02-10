@@ -21,6 +21,7 @@ package org.apache.roller.weblogger.ui.struts2.util;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
@@ -137,8 +138,8 @@ public abstract class UIAction extends ActionSupport
         try {
             GlobalPermission adminPerm = new GlobalPermission( 
                 Collections.singletonList(GlobalPermission.ADMIN));
-            UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
-            return umgr.checkPermission(adminPerm, getAuthenticatedUser());
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+            return pmgr.checkPermission(adminPerm, getAuthenticatedUser());
         } catch (Exception e) {}
         return false;
     }

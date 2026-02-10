@@ -171,6 +171,7 @@ public class UserTest  {
     public void testRoleCRUD() throws Exception {
         
         UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
+        RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
         User user = null;
         
         // add test user
@@ -181,17 +182,17 @@ public class UserTest  {
         assertNotNull(user);
         
         if (WebloggerConfig.getBooleanProperty("users.firstUserAdmin")) {
-            assertEquals(2, mgr.getRoles(user).size());
-            assertTrue(mgr.hasRole("editor", user));
-            assertTrue(mgr.hasRole("admin", user));
+            assertEquals(2, rmgr.getRoles(user).size());
+            assertTrue(rmgr.hasRole("editor", user));
+            assertTrue(rmgr.hasRole("admin", user));
         } else {
-            assertEquals(1, mgr.getRoles(user).size());
-            assertTrue(mgr.hasRole("editor", user));
-            assertFalse(mgr.hasRole("admin", user));
+            assertEquals(1, rmgr.getRoles(user).size());
+            assertTrue(rmgr.hasRole("editor", user));
+            assertFalse(rmgr.hasRole("admin", user));
         }
         
         // remove role
-        mgr.revokeRole("editor",user);
+        rmgr.revokeRole("editor",user);
         mgr.saveUser(user);
         TestUtils.endSession(true);
         
@@ -200,16 +201,16 @@ public class UserTest  {
         user = mgr.getUserByUserName(testUser.getUserName());
         assertNotNull(user);
         if (WebloggerConfig.getBooleanProperty("users.firstUserAdmin")) {
-            assertEquals(1, mgr.getRoles(user).size());
-            assertFalse(mgr.hasRole("editor", user));
-            assertTrue(mgr.hasRole("admin", user));
+            assertEquals(1, rmgr.getRoles(user).size());
+            assertFalse(rmgr.hasRole("editor", user));
+            assertTrue(rmgr.hasRole("admin", user));
         } else {
-            assertEquals(0, mgr.getRoles(user).size());
-            assertFalse(mgr.hasRole("editor", user));
-            assertFalse(mgr.hasRole("admin", user));
+            assertEquals(0, rmgr.getRoles(user).size());
+            assertFalse(rmgr.hasRole("editor", user));
+            assertFalse(rmgr.hasRole("admin", user));
         }
         // add role
-        mgr.grantRole("editor", user);
+        rmgr.grantRole("editor", user);
         mgr.saveUser(user);
         TestUtils.endSession(true);
         
@@ -218,13 +219,13 @@ public class UserTest  {
         user = mgr.getUserByUserName(testUser.getUserName());
         assertNotNull(user);
         if (WebloggerConfig.getBooleanProperty("users.firstUserAdmin")) {
-            assertEquals(2, mgr.getRoles(user).size());
-            assertTrue(mgr.hasRole("editor", user));
-            assertTrue(mgr.hasRole("admin", user));
+            assertEquals(2, rmgr.getRoles(user).size());
+            assertTrue(rmgr.hasRole("editor", user));
+            assertTrue(rmgr.hasRole("admin", user));
         } else {
-            assertEquals(1, mgr.getRoles(user).size());
-            assertTrue(mgr.hasRole("editor", user));
-            assertFalse(mgr.hasRole("admin", user));
+            assertEquals(1, rmgr.getRoles(user).size());
+            assertTrue(rmgr.hasRole("editor", user));
+            assertFalse(rmgr.hasRole("admin", user));
         }
         // remove test user
         TestUtils.teardownUser(testUser.getUserName());

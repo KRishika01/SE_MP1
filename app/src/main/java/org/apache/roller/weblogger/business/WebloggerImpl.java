@@ -66,11 +66,15 @@ public abstract class WebloggerImpl implements Weblogger {
     private final ThemeManager         themeManager;
     private final ThreadManager        threadManager;
     private final UserManager          userManager;
+    private final RoleManager          roleManager;
+    private final PermissionManager    permissionManager;
     private final WeblogManager        weblogManager;
     private final WeblogEntryManager   weblogEntryManager;
     private final OAuthManager         oauthManager;
     private final FeedFetcher          feedFetcher;
     private final PlanetManager        planetManager;
+    private final WeblogTemplateManager   weblogTemplateManager;
+    private final WeblogQueryManager       weblogQueryManager;
     
     // url strategy
     private final URLStrategy          urlStrategy;
@@ -96,7 +100,11 @@ public abstract class WebloggerImpl implements Weblogger {
         ThemeManager         themeManager,
         ThreadManager        threadManager,
         UserManager          userManager,
+        RoleManager          roleManager,
+        PermissionManager    permissionManager,
         WeblogManager        weblogManager,
+        WeblogTemplateManager weblogTemplateManager,
+        WeblogQueryManager     weblogQueryManager,
         WeblogEntryManager   weblogEntryManager,
         OAuthManager         oauthManager,
         FeedFetcher          feedFetcher,
@@ -116,7 +124,11 @@ public abstract class WebloggerImpl implements Weblogger {
         this.themeManager        = themeManager;
         this.threadManager       = threadManager;
         this.userManager         = userManager;
+        this.roleManager         = roleManager;
+        this.permissionManager   = permissionManager;
         this.weblogManager       = weblogManager;
+        this.weblogTemplateManager = weblogTemplateManager;
+        this.weblogQueryManager    = weblogQueryManager;
         this.weblogEntryManager  = weblogEntryManager;
         this.oauthManager        = oauthManager;
         this.urlStrategy         = urlStrategy;
@@ -185,6 +197,28 @@ public abstract class WebloggerImpl implements Weblogger {
     /**
      * 
      * 
+     * @see org.apache.roller.weblogger.business.Weblogger#getRoleManager()
+     */
+    @Override
+    public RoleManager getRoleManager() {
+        return roleManager;
+    }
+    
+    
+    /**
+     * 
+     * 
+     * @see org.apache.roller.weblogger.business.Weblogger#getPermissionManager()
+     */
+    @Override
+    public PermissionManager getPermissionManager() {
+        return permissionManager;
+    }
+    
+    
+    /**
+     * 
+     * 
      * @see org.apache.roller.weblogger.business.Weblogger#getBookmarkManager()
      */
     @Override
@@ -235,6 +269,15 @@ public abstract class WebloggerImpl implements Weblogger {
         return weblogManager;
     }
     
+    @Override
+    public WeblogTemplateManager getWeblogTemplateManager() {
+        return weblogTemplateManager;
+    }
+
+    @Override
+    public WeblogQueryManager getWeblogQueryManager() {
+        return weblogQueryManager;
+    }
 
     /**
      * 
@@ -340,7 +383,11 @@ public abstract class WebloggerImpl implements Weblogger {
             pluginManager.release();
             threadManager.release();
             userManager.release();
+            roleManager.release();
+            permissionManager.release();
             weblogManager.release();
+            weblogTemplateManager.release();
+            weblogQueryManager.release();
         } catch(Exception e) {
             log.error("Error calling Roller.release()", e);
         }

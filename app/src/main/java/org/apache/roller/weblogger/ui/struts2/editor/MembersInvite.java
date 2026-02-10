@@ -26,6 +26,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
@@ -105,7 +106,8 @@ public class MembersInvite extends UIAction {
         
         // check for existing permissions or invitation
         try {
-            WeblogPermission perm = umgr.getWeblogPermissionIncludingPending(getActionWeblog(), user);
+            PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+            WeblogPermission perm = pmgr.getWeblogPermissionIncludingPending(getActionWeblog(), user);
 
             if (perm != null && perm.isPending()) {
                 addError("inviteMember.error.userAlreadyInvited");
@@ -121,7 +123,8 @@ public class MembersInvite extends UIAction {
         // if no errors then send the invitation
         if(!hasActionErrors()) {
             try {
-                umgr.grantWeblogPermissionPending(getActionWeblog(), user,
+                PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
+                pmgr.grantWeblogPermissionPending(getActionWeblog(), user,
                         Collections.singletonList(getPermissionString()));
                 WebloggerFactory.getWeblogger().flush();
 

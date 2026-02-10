@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.PropertiesManager;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.plugins.comment.WeblogEntryCommentPlugin;
@@ -112,7 +113,8 @@ public class GlobalConfig extends UIAction implements HttpParametersAware, Servl
 
         try {
             WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
-            setWeblogs(mgr.getWeblogs(true, null, null, null, 0, -1));
+            WeblogQueryManager wqmgr = WebloggerFactory.getWeblogger().getWeblogQueryManager();
+            setWeblogs(wqmgr.getWeblogs(true, null, null, null, 0, -1));
         } catch (WebloggerException ex) {
             log.error("Error getting weblogs", ex);
             addError("frontpageConfig.weblogs.error");

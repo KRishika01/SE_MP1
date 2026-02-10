@@ -34,7 +34,9 @@ import org.apache.roller.util.DateUtil;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.business.support.WeblogEntryAttributeSupport;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
 import org.apache.roller.weblogger.business.search.IndexManager;
@@ -218,7 +220,7 @@ public final class EntryEdit extends UIAction {
                 // if user is an admin then apply pinned to main value as well
                 GlobalPermission adminPerm = new GlobalPermission(
                         Collections.singletonList(GlobalPermission.ADMIN));
-                if (WebloggerFactory.getWeblogger().getUserManager()
+                if (WebloggerFactory.getWeblogger().getPermissionManager()
                         .checkPermission(adminPerm, getAuthenticatedUser())) {
                     weblogEntry.setPinnedToMain(getBean().getPinnedToMain());
                 }
@@ -231,11 +233,11 @@ public final class EntryEdit extends UIAction {
                                 .lookupResource(getBean().getEnclosureURL());
 
                         // set mediacast attributes
-                        weblogEntry.putEntryAttribute("att_mediacast_url",
+                        WeblogEntryAttributeSupport.putEntryAttribute(weblogEntry, "att_mediacast_url",
                                 mediacast.getUrl());
-                        weblogEntry.putEntryAttribute("att_mediacast_type",
+                        WeblogEntryAttributeSupport.putEntryAttribute(weblogEntry, "att_mediacast_type",
                                 mediacast.getContentType());
-                        weblogEntry.putEntryAttribute("att_mediacast_length", ""
+                        WeblogEntryAttributeSupport.putEntryAttribute(weblogEntry, "att_mediacast_length", ""
                                 + mediacast.getLength());
 
                     } catch (MediacastException ex) {

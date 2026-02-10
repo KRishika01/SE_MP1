@@ -76,7 +76,8 @@ public class WeblogStatsTest  {
     @Test
     public void testGetMostCommentedWeblogs() throws Exception {        
         WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();     
-        List<StatCount> list = mgr.getMostCommentedWeblogs(null, null, 0, -1);  
+        WeblogQueryManager qm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
+        List<StatCount> list = qm.getMostCommentedWeblogs(null, null, 0, -1);  
         
         assertNotNull(list);
         assertEquals(2, list.size());
@@ -122,7 +123,8 @@ public class WeblogStatsTest  {
     @Test
     public void testGetWeblogLetterMap() throws Exception {        
         WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
-        Map<String, Long> map = mgr.getWeblogHandleLetterMap();    
+        WeblogQueryManager qm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
+        Map<String, Long> map = qm.getWeblogHandleLetterMap();    
         assertNotNull(map.get("A"));
         assertNotNull(map.get("B"));
         assertNotNull(map.get("C"));

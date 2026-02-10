@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.PropertiesManager;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
 import org.apache.roller.weblogger.pojos.Weblog;
@@ -67,7 +68,8 @@ public class Setup extends UIAction {
         
         try {
             WeblogManager mgr =  WebloggerFactory.getWeblogger().getWeblogManager();
-            setWeblogs(mgr.getWeblogs(true, null, null, null, 0, -1));
+            WeblogQueryManager wqm = WebloggerFactory.getWeblogger().getWeblogQueryManager();
+            setWeblogs(wqm.getWeblogs(true, null, null, null, 0, -1));
         } catch (WebloggerException ex) {
             LOG.error("Error getting weblogs", ex);
             addError("frontpageConfig.weblogs.error");
@@ -75,7 +77,7 @@ public class Setup extends UIAction {
 
         try {
             setUserCount(WebloggerFactory.getWeblogger().getUserManager().getUserCount());
-            setBlogCount(WebloggerFactory.getWeblogger().getWeblogManager().getWeblogCount());
+            setBlogCount(WebloggerFactory.getWeblogger().getWeblogQueryManager().getWeblogCount());
         } catch (WebloggerException ex) {
             LOG.error("Error getting user/weblog counts", ex);
         }

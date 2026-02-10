@@ -22,7 +22,7 @@
 <%@ page import="java.util.List" %>
 <%
 User user = RollerSession.getRollerSession(request).getAuthenticatedUser();
-List weblogs = WebloggerFactory.getWeblogger().getWeblogManager().getUserWeblogs(user, true);
+List weblogs = WebloggerFactory.getWeblogger().getWeblogQueryManager().getUserWeblogs(user, true);
 
 if (user == null) {
     response.sendRedirect(request.getContextPath()+"/roller-ui/register.rol");

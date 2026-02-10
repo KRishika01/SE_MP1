@@ -113,7 +113,7 @@ public class SearchOperation extends ReadFromIndexOperation {
             // Create a query object out of our term
             Query query = multiParser.parse(term);
 
-            Term handleTerm = IndexUtil.getTerm(FieldConstants.WEBSITE_HANDLE, weblogHandle);
+            Term handleTerm = LuceneIndexManager.getTerm(FieldConstants.WEBSITE_HANDLE, weblogHandle);
             if (handleTerm != null) {
                 query = new BooleanQuery.Builder()
                     .add(query, BooleanClause.Occur.MUST)
@@ -129,7 +129,7 @@ public class SearchOperation extends ReadFromIndexOperation {
                     .build();
             }
 
-            Term localeTerm = IndexUtil.getTerm(FieldConstants.LOCALE, locale);
+            Term localeTerm = LuceneIndexManager.getTerm(FieldConstants.LOCALE, locale);
             if (localeTerm != null) {
                 query = new BooleanQuery.Builder()
                     .add(query, BooleanClause.Occur.MUST)

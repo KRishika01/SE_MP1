@@ -39,6 +39,8 @@ import org.apache.roller.weblogger.business.PropertiesManager;
 import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.business.pings.AutoPingManager;
@@ -52,6 +54,12 @@ import org.apache.roller.weblogger.business.search.lucene.LuceneIndexManager;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.business.themes.ThemeManagerImpl;
 import org.apache.roller.weblogger.planet.business.WebloggerRomeFeedFetcher;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
+import org.apache.roller.weblogger.business.jpa.JPAWeblogTemplateManagerImpl;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
+import org.apache.roller.weblogger.business.jpa.JPAWeblogQueryManagerImpl;
+
+
 
 
 /**
@@ -72,7 +80,9 @@ public class JPAWebloggerModule implements Module {
         binder.bind(PingTargetManager.class).to(   JPAPingTargetManagerImpl.class); 
         binder.bind(PropertiesManager.class).to(   JPAPropertiesManagerImpl.class);   
         binder.bind(ThreadManager.class).to(       JPAThreadManagerImpl.class);
-        binder.bind(UserManager.class).to(         JPAUserManagerImpl.class);   
+        binder.bind(UserManager.class).to(         JPAUserManagerImpl.class);
+        binder.bind(RoleManager.class).to(         JPARoleManagerImpl.class);
+        binder.bind(PermissionManager.class).to(   JPAPermissionManagerImpl.class);
         binder.bind(WeblogManager.class).to(       JPAWeblogManagerImpl.class);   
         binder.bind(WeblogEntryManager.class).to(  JPAWeblogEntryManagerImpl.class);   
         binder.bind(OAuthManager.class).to(        JPAOAuthManagerImpl.class);
@@ -90,6 +100,9 @@ public class JPAWebloggerModule implements Module {
 		binder.bind(Planet.class).to(              JPAPlanetImpl.class);
         binder.bind(PlanetManager.class).to(       JPAPlanetManagerImpl.class);   
         binder.bind(FeedFetcher.class).to(         WebloggerRomeFeedFetcher.class);
+
+        binder.bind(WeblogTemplateManager.class).to(JPAWeblogTemplateManagerImpl.class);
+        binder.bind(WeblogQueryManager.class).to(JPAWeblogQueryManagerImpl.class);
     }
     
 }

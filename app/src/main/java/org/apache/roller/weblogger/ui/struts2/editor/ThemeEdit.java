@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogTemplateManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.SharedTheme;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
@@ -86,7 +87,7 @@ public class ThemeEdit extends UIAction {
 
                 ThemeTemplate override = WebloggerFactory
                         .getWeblogger()
-                        .getWeblogManager()
+                        .getWeblogTemplateManager()
                         .getTemplateByLink(
                                 getActionWeblog(),
                                 getActionWeblog().getTheme().getStylesheet()
@@ -185,15 +186,16 @@ public class ThemeEdit extends UIAction {
                     String originalTheme = weblog.getEditorTheme();
 
                     WeblogManager mgr = WebloggerFactory.getWeblogger().getWeblogManager();
+                    WeblogTemplateManager wtm = WebloggerFactory.getWeblogger().getWeblogTemplateManager();
 
                     // Remove old style sheet
                     if (!originalTheme.equals(selectedThemeId) && getActionWeblog().getTheme().getStylesheet() != null) {
-                        WeblogTemplate stylesheet = mgr.getTemplateByAction(getActionWeblog(),
+                        WeblogTemplate stylesheet = wtm.getTemplateByAction(getActionWeblog(),
                                 ComponentType.STYLESHEET);
 
                         if (stylesheet != null) {
                             // Remove template and its renditions
-                            mgr.removeTemplate(stylesheet);
+                            wtm.removeTemplate(stylesheet);
                             sharedThemeCustomStylesheet = false;
                         }
                     }
@@ -235,7 +237,7 @@ public class ThemeEdit extends UIAction {
         try {
             return (WebloggerFactory
                     .getWeblogger()
-                    .getWeblogManager()
+                    .getWeblogTemplateManager()
                     .getTemplateByAction(getActionWeblog(),
                             ComponentType.WEBLOG) == null);
         } catch (WebloggerException ex) {

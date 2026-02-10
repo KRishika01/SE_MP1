@@ -58,6 +58,8 @@ import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.apache.roller.weblogger.pojos.WeblogEntrySearchCriteria;
 import org.apache.roller.weblogger.pojos.WeblogEntryTag;
 import org.apache.roller.weblogger.pojos.WeblogEntryTagComparator;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryTagSupport;
 import org.apache.roller.weblogger.util.Utilities;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 
@@ -315,7 +317,7 @@ public class EntryCollection {
     private Entry createAtomEntry(WeblogEntry entry) {
         Entry atomEntry = new Entry();
         
-        atomEntry.setId(        entry.getPermalink());
+        atomEntry.setId(        WeblogEntryPermalinkSupport.getPermalink(entry));
         atomEntry.setTitle(     entry.getTitle());
         atomEntry.setPublished( entry.getPubTime());
         atomEntry.setUpdated(   entry.getUpdateTime());
@@ -335,11 +337,17 @@ public class EntryCollection {
             atomEntry.setSummary(summary);
         }
         
-        User creator = entry.getCreator();
-        SyndPerson author = new Person();
-        author.setName(         creator.getUserName());
-        author.setEmail(        creator.getEmailAddress());
-        atomEntry.setAuthors(Collections.singletonList(author));
+        try {
+            User creator = roller.getUserManager().getUserByUserName(entry.getCreatorUserName());
+            SyndPerson author = new Person();
+            author.setName(         creator != null ? creator.getUserName() : entry.getCreatorUserName());
+            author.setEmail(        creator != null ? creator.getEmailAddress() : "");
+            atomEntry.setAuthors(Collections.singletonList(author));
+        } catch (Exception e) {
+            SyndPerson author = new Person();
+            author.setName(entry.getCreatorUserName());
+            atomEntry.setAuthors(Collections.singletonList(author));
+        }
         
         // Add Atom category for Weblogger category, using category scheme
         List<Category> categories = new ArrayList<>();
@@ -360,7 +368,7 @@ public class EntryCollection {
         
         Link altlink = new Link();
         altlink.setRel("alternate");
-        altlink.setHref(entry.getPermalink());
+        altlink.setHref(WeblogEntryPermalinkSupport.getPermalink(entry));
         List<Link> altlinks = new ArrayList<>();
         altlinks.add(altlink);
         atomEntry.setAlternateLinks(altlinks);
@@ -457,7 +465,7 @@ public class EntryCollection {
             }
             tags = buff.toString();
         }
-        rollerEntry.setTagsAsString(tags);        
+        WeblogEntryTagSupport.setTagsAsString(rollerEntry, tags);        
     }
 
     private void reindexEntry(WeblogEntry entry) throws WebloggerException {

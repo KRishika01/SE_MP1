@@ -28,7 +28,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.support.WeblogEntryPermalinkSupport;
 import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.util.RollerMessages;
 
@@ -62,7 +64,7 @@ public class AkismetCommentValidator implements CommentValidator {
         sb.append("user_ip="        ).append(comment.getRemoteHost()).append("&");
         sb.append("user_agent="     ).append(comment.getUserAgent()).append("&");
         sb.append("referrer="       ).append(comment.getReferrer()).append("&");
-        sb.append("permalink="      ).append(comment.getWeblogEntry().getPermalink()).append("&");
+        sb.append("permalink="      ).append(WeblogEntryPermalinkSupport.getPermalink(comment.getWeblogEntry())).append("&");
         sb.append("comment_type="   ).append("comment").append("&");
         sb.append("comment_author=" ).append(comment.getName()).append("&");
         sb.append("comment_author_email=").append(comment.getEmail()).append("&");

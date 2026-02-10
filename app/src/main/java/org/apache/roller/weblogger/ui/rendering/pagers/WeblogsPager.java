@@ -29,6 +29,7 @@ import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WeblogQueryManager;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.wrapper.WeblogWrapper;
 
@@ -137,11 +138,12 @@ public class WeblogsPager extends AbstractPager<WeblogWrapper> {
             try {
                 Weblogger roller = WebloggerFactory.getWeblogger();
                 WeblogManager wmgr = roller.getWeblogManager();
+                WeblogQueryManager wqmgr = roller.getWeblogQueryManager();
                 List<Weblog> rawWeblogs;
                 if (letter == null) {
-                    rawWeblogs = wmgr.getWeblogs(Boolean.TRUE, Boolean.TRUE, startDate, null, offset, length + 1);
+                    rawWeblogs = wqmgr.getWeblogs(Boolean.TRUE, Boolean.TRUE, startDate, null, offset, length + 1);
                 } else {
-                    rawWeblogs = wmgr.getWeblogsByLetter(letter.charAt(0), offset, length + 1);
+                    rawWeblogs = wqmgr.getWeblogsByLetter(letter.charAt(0), offset, length + 1);
                 }
                 
                 // wrap the results

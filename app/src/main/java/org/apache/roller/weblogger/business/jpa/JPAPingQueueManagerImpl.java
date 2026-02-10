@@ -116,6 +116,16 @@ public class JPAPingQueueManagerImpl implements PingQueueManager {
     }
 
     @Override
+    public void removeQueueEntries(org.apache.roller.weblogger.pojos.Weblog weblog) throws WebloggerException {
+        TypedQuery<PingQueueEntry> q = strategy.getNamedQuery("PingQueueEntry.getByWebsite", PingQueueEntry.class);
+        q.setParameter(1, weblog);
+        List<PingQueueEntry> queueEntries = q.getResultList();
+        for (PingQueueEntry obj : queueEntries) {
+            this.strategy.remove(obj);
+        }
+    }
+
+    @Override
     public void release() {}
     
 

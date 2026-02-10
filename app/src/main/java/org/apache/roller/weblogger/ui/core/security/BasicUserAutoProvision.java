@@ -25,6 +25,7 @@ import org.apache.roller.util.UUIDGenerator;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.RoleManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -61,10 +62,11 @@ public class BasicUserAutoProvision implements AutoProvision {
 				// for some reason the User object doesn't contain a isAdmin setting
 				// so it makes it difficult to add grants without that info, so setting
 				// them manually here
+				RoleManager rmgr = WebloggerFactory.getWeblogger().getRoleManager();
 				Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 				for (GrantedAuthority auth : authentication.getAuthorities()) {
 					if (auth.getAuthority().contains("admin") || auth.getAuthority().contains("ADMIN")) {
-						mgr.grantRole("admin", ud);
+						rmgr.grantRole("admin", ud);
 					}
 				}
 				WebloggerFactory.getWeblogger().flush();

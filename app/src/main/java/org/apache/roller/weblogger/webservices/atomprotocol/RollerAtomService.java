@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MediaFileManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
@@ -61,7 +62,7 @@ public class RollerAtomService extends AtomService {
         }
         
         try {
-            perms = roller.getUserManager().getWeblogPermissions(user);
+            perms = roller.getPermissionManager().getWeblogPermissions(user);
         } catch (WebloggerException re) {
             throw new AtomException("Getting user's weblogs", re);
         }

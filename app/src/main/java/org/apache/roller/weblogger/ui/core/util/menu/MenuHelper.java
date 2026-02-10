@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
@@ -144,6 +145,7 @@ public final class MenuHelper {
 
         Menu tabMenu = new Menu();
         UserManager umgr = WebloggerFactory.getWeblogger().getUserManager();
+        PermissionManager pmgr = WebloggerFactory.getWeblogger().getPermissionManager();
 
 
         // Hack - for blogger convenience, the design tab of the edit
@@ -170,7 +172,7 @@ public final class MenuHelper {
                     && !configTab.getGlobalPermissionActions().isEmpty()) {
                 try {
                     GlobalPermission perm = new GlobalPermission( configTab.getGlobalPermissionActions());
-                    if (!umgr.checkPermission(perm, user)) {
+                    if (!pmgr.checkPermission(perm, user)) {
                         includeTab = false;
                     }
                 } catch (WebloggerException ex) {
@@ -183,7 +185,7 @@ public final class MenuHelper {
             if (includeTab && configTab.getWeblogPermissionActions() != null
                     && !configTab.getWeblogPermissionActions().isEmpty()) {
                 WeblogPermission perm = new WeblogPermission(weblog, configTab.getWeblogPermissionActions());
-                includeTab = umgr.checkPermission(perm, user);
+                includeTab = pmgr.checkPermission(perm, user);
             }
 
             if (includeTab) {
@@ -214,7 +216,7 @@ public final class MenuHelper {
                             && !configTabItem.getGlobalPermissionActions() .isEmpty()) {
                         GlobalPermission perm = new GlobalPermission(
                                 configTabItem.getGlobalPermissionActions());
-                        if (!umgr.checkPermission(perm, user)) {
+                        if (!pmgr.checkPermission(perm, user)) {
                             includeItem = false;
                         }
                     }
@@ -224,7 +226,7 @@ public final class MenuHelper {
                             && configTabItem.getWeblogPermissionActions() != null
                             && !configTabItem.getWeblogPermissionActions().isEmpty()) {
                         WeblogPermission perm = new WeblogPermission(weblog, configTabItem.getWeblogPermissionActions());
-                        includeItem = umgr.checkPermission(perm, user);
+                        includeItem = pmgr.checkPermission(perm, user);
                     }
 
                     if (includeItem) {

@@ -692,6 +692,27 @@ limitations under the License.
                             </resources>
                         </configuration>
                     </execution>
+
+                    <!-- <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/roller/WEB-INF/classes/dbscripts</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target/dbscripts</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>**/*.sql</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution> -->
+
                 </executions>
 
                 <configuration>

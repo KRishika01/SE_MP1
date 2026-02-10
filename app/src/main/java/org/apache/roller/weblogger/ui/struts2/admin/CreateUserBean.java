@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.PermissionManager;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.pojos.User;
 
@@ -181,7 +182,7 @@ public class CreateUserBean {
         try {
             GlobalPermission adminPerm = 
                 new GlobalPermission(Collections.singletonList(GlobalPermission.ADMIN));
-            this.administrator = WebloggerFactory.getWeblogger().getUserManager()
+            this.administrator = WebloggerFactory.getWeblogger().getPermissionManager()
                     .checkPermission(adminPerm, dataHolder);
 
         } catch (WebloggerException ex) {}

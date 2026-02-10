@@ -1,0 +1,449 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------< [0;36morg.apache.roller:roller-webapp[0;1m >-------------------[m
+[[1;34mINFO[m] [1mBuilding Roller webapp 6.1.5[m
+[[1;34mINFO[m] [1m--------------------------------[ war ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:copy-resources[m [1m(copy-main-resources)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Copying 94 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mbuildnumber-maven-plugin:3.2.1:create[m [1m(default)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Executing: /bin/sh -c cd '/home/anagha/SE/project-1-team-3/app' && 'git' 'log' '-1' '--no-merges' '--format=format:%H %aI %aE %aN'
+[[1;34mINFO[m] Working directory: /home/anagha/SE/project-1-team-3/app
+[[1;34mINFO[m] Storing buildNumber: b0cae3b10c9623bb099f76784410d0475b85187d at timestamp: 1770629450265
+[[1;34mINFO[m] Executing: /bin/sh -c cd '/home/anagha/SE/project-1-team-3/app' && 'git' 'symbolic-ref' 'HEAD'
+[[1;34mINFO[m] Working directory: /home/anagha/SE/project-1-team-3/app
+[[1;34mINFO[m] Storing scmBranch: weblog-management
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:copy-resources[m [1m(copy-dbscripts-resources)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Copying 24 resources from src/main/resources/sql to target/classes/dbscripts
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-antrun-plugin:3.1.0:run[m [1m(gen-db-scripts)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Executing tasks
+[[1;34mINFO[m]     [texen] Using contextProperties file: /home/anagha/SE/project-1-team-3/app/src/main/resources/sql/dbscripts.properties
+/home/anagha/SE/project-1-team-3/app/src/main/resources/sql
+[[1;34mINFO[m]     [texen] Generating to file /home/anagha/SE/project-1-team-3/app/target/classes/dbscripts/README.txt
+[[1;34mINFO[m] Executed tasks
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Copying 50 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 1 resource from src/main/resources-filtered to target/classes
+[[1;34mINFO[m] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:compile[m [1m(default-compile)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
+[[1;34mINFO[m] Compiling 553 source files with javac [forked debug release 11] to target/classes
+[[1;33mWARNING[m] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[[1;33mWARNING[m] No SupportedSourceVersion annotation found on org.apache.struts.annotations.taglib.apt.TagAnnotationProcessor, returning RELEASE_6.
+[[1;33mWARNING[m] Supported source version 'RELEASE_6' from annotation processor 'org.apache.struts.annotations.taglib.apt.TagAnnotationProcessor' less than -source '11'
+[[1;33mWARNING[m] No processor claimed any of these annotations: /com.google.inject.Inject,/org.apache.struts2.interceptor.validation.SkipValidation,/com.google.inject.Singleton
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/RollerException.java:[28,16] [serial] serializable class RollerException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/business/BootstrapException.java:[27,7] [serial] serializable class BootstrapException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/business/InitializationException.java:[27,7] [serial] serializable class InitializationException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/pojos/Subscription.java:[30,7] [serial] serializable class Subscription has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/business/fetcher/FetcherException.java:[29,7] [serial] serializable class FetcherException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/pojos/PlanetGroup.java:[33,7] [serial] serializable class PlanetGroup has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/pojos/SubscriptionEntry.java:[38,7] [serial] serializable class SubscriptionEntry has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/WebloggerException.java:[27,7] [serial] serializable class WebloggerException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/InitializationException.java:[27,7] [serial] serializable class InitializationException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/startup/StartupException.java:[29,7] [serial] serializable class StartupException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/business/updater/UpdaterException.java:[27,7] [serial] serializable class UpdaterException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/pojos/StaticTemplate.java:[32,7] [serial] serializable class StaticTemplate has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/planet/util/rome/ContentModuleImpl.java:[22,7] [serial] serializable class ContentModuleImpl has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/WeblogTheme.java:[30,16] [serial] serializable class WeblogTheme has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/WeblogEntryPublicationSettings.java:[10,7] [serial] serializable class WeblogEntryPublicationSettings has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/WeblogEntryCommentSettings.java:[8,7] [serial] serializable class WeblogEntryCommentSettings has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/BootstrapException.java:[27,7] [serial] serializable class BootstrapException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/FileNotFoundException.java:[27,7] [serial] serializable class FileNotFoundException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/FilePathException.java:[28,7] [serial] serializable class FilePathException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/FileIOException.java:[28,7] [serial] serializable class FileIOException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/SharedTheme.java:[33,16] [serial] serializable class SharedTheme has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/wrapper/WeblogEntryWrapper.java:[245,42] [deprecation] getPermaLink(WeblogEntry) in WeblogEntryPermalinkSupport has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/wrapper/WeblogEntryWrapper.java:[250,42] [deprecation] getPermaLink(WeblogEntry) in WeblogEntryPermalinkSupport has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/TaskLock.java:[30,7] [serial] serializable class TaskLock has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/WeblogHitCount.java:[29,7] [serial] serializable class WeblogHitCount has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/RollerPermission.java:[30,16] [serial] serializable class RollerPermission has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/ObjectPermission.java:[28,16] [serial] serializable class ObjectPermission has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/WeblogPermission.java:[34,7] [serial] serializable class WeblogPermission has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/OAuthConsumerRecord.java:[30,7] [serial] serializable class OAuthConsumerRecord has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/OAuthAccessorRecord.java:[30,7] [serial] serializable class OAuthAccessorRecord has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/jpa/JPAUserManagerImpl.java:[592,24] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/jpa/JPAUserManagerImpl.java:[575,19] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/search/lucene/LuceneIndexManager.java:[458,42] [deprecation] doc(int) in IndexSearcher has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/SharedThemeFromDir.java:[41,7] [serial] serializable class SharedThemeFromDir has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/ThemeInitializationException.java:[27,7] [serial] serializable class ThemeInitializationException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/SharedThemeResourceFromDir.java:[38,7] [serial] serializable class SharedThemeResourceFromDir has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/SharedThemeTemplateRendition.java:[31,7] [serial] serializable class SharedThemeTemplateRendition has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/SharedThemeTemplate.java:[37,7] [serial] serializable class SharedThemeTemplate has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/ThemeParsingException.java:[27,7] [serial] serializable class ThemeParsingException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/ThemeNotFoundException.java:[27,7] [serial] serializable class ThemeNotFoundException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/WeblogCustomTheme.java:[39,7] [serial] serializable class WeblogCustomTheme has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/business/themes/WeblogSharedTheme.java:[40,7] [serial] serializable class WeblogSharedTheme has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/util/UIAction.java:[55,16] [serial] serializable class UIAction has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/planet/ui/PlanetUIAction.java:[30,16] [serial] serializable class PlanetUIAction has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/planet/ui/PlanetConfig.java:[48,7] [serial] serializable class PlanetConfig has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/planet/ui/PlanetGroupSubs.java:[41,7] [serial] serializable class PlanetGroupSubs has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/planet/ui/PlanetGroups.java:[35,7] [serial] serializable class PlanetGroups has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/GlobalPermission.java:[58,77] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/GlobalPermission.java:[36,7] [serial] serializable class GlobalPermission has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/StaticTemplate.java:[37,7] [serial] serializable class StaticTemplate has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/pojos/StaticThemeTemplate.java:[36,7] [serial] serializable class StaticThemeTemplate has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/CustomOpenIDAuthenticationProcessingFilter.java:[43,16] [deprecation] OpenIDAuthenticationFilter in org.springframework.security.openid has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/CustomOpenIDAuthenticationProcessingFilter.java:[43,16] [deprecation] OpenIDAuthenticationFilter in org.springframework.security.openid has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/CustomOpenIDAuthenticationProcessingFilter.java:[43,16] [deprecation] OpenIDAuthenticationFilter in org.springframework.security.openid has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/CustomOpenIDAuthenticationProcessingFilter.java:[52,8] [deprecation] OpenIDAuthenticationToken in org.springframework.security.openid has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/CustomOpenIDAuthenticationProcessingFilter.java:[55,16] [deprecation] OpenIDAuthenticationToken in org.springframework.security.openid has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/filters/RoleAssignmentFilter.java:[81,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/security/AuthoritiesPopulator.java:[65,28] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/security/RollerUserDetailsService.java:[98,34] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/util/InvalidRequestException.java:[28,7] [serial] serializable class InvalidRequestException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/core/tags/calendar/CalendarTag.java:[44,7] [serial] serializable class CalendarTag has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/RenderingException.java:[27,7] [serial] serializable class RenderingException has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/CommentAuthenticatorServlet.java:[42,7] [serial] serializable class CommentAuthenticatorServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/CommentServlet.java:[78,7] [serial] serializable class CommentServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/FeedServlet.java:[56,7] [serial] serializable class FeedServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/util/cache/ExpiringCacheEntry.java:[30,7] [serial] serializable class ExpiringCacheEntry has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/MediaResourceServlet.java:[49,7] [serial] serializable class MediaResourceServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/PageServlet.java:[73,7] [serial] serializable class PageServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/PlanetFeedServlet.java:[55,7] [serial] serializable class PlanetFeedServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/PreviewResourceServlet.java:[49,7] [serial] serializable class PreviewResourceServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/PreviewServlet.java:[60,7] [serial] serializable class PreviewServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/RSDServlet.java:[54,7] [serial] serializable class RSDServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/rendering/servlets/TrackbackServlet.java:[57,7] [serial] serializable class TrackbackServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/CacheInfo.java:[34,7] [serial] serializable class CacheInfo has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/GlobalCommentManagement.java:[52,7] [serial] serializable class GlobalCommentManagement has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/GlobalConfig.java:[53,7] [serial] serializable class GlobalConfig has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/PingTargetEdit.java:[35,7] [serial] serializable class PingTargetEdit has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/PingTargets.java:[38,7] [serial] serializable class PingTargets has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/UserAdmin.java:[36,7] [serial] serializable class UserAdmin has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/UserEdit.java:[162,55] [deprecation] randomAlphanumeric(int) in RandomStringUtils has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/admin/UserEdit.java:[50,7] [serial] serializable class UserEdit has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/ajax/CommentDataServlet.java:[41,7] [serial] serializable class CommentDataServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/ajax/ThemeDataServlet.java:[43,7] [serial] serializable class ThemeDataServlet has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/CreateWeblog.java:[47,7] [serial] serializable class CreateWeblog has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Install.java:[41,7] [serial] serializable class Install has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Login.java:[38,7] [serial] serializable class Login has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/MainMenu.java:[39,7] [serial] serializable class MainMenu has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/OAuthAuthorize.java:[34,7] [serial] serializable class OAuthAuthorize has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/OAuthKeys.java:[37,7] [serial] serializable class OAuthKeys has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Profile.java:[110,55] [deprecation] randomAlphanumeric(int) in RandomStringUtils has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Profile.java:[42,7] [serial] serializable class Profile has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Register.java:[370,51] [deprecation] randomAlphanumeric(int) in RandomStringUtils has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Register.java:[54,7] [serial] serializable class Register has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/core/Setup.java:[39,7] [serial] serializable class Setup has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/editor/BookmarkEdit.java:[37,7] [serial] serializable class BookmarkEdit has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/editor/Bookmarks.java:[42,7] [serial] serializable class Bookmarks has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/main/java/org/apache/roller/weblogger/ui/struts2/editor/BookmarksImport.java:[41,13] [serial] serializable class BookmarksImport has no definition of serialVersionUID
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Copying 111 resources from src/main/webapp to target/test-classes
+[[1;34mINFO[m] Copying 26 resources from src/test/resources to target/test-classes
+[[1;34mINFO[m] The encoding used to copy filtered properties files have not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36mroller-webapp[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 60 source files with javac [forked debug release 11] to target/test-classes
+[[1;33mWARNING[m] Unable to autodetect 'javac' path, using 'javac' from the environment.
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;33mWARNING[m] COMPILATION WARNING : 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbynet/10.11.1.1/derby.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_cs.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_de_DE.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_es.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_fr.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_hu.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_it.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_ja_JP.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_ko_KR.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_pl.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_pt_BR.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_ru.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_zh_CN.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derby/10.11.1.1/derbyLocale_zh_TW.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_cs.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_de_DE.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_es.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_fr.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_hu.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_it.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_ja_JP.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_ko_KR.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_pl.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_pt_BR.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_ru.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_zh_CN.jar": no such file or directory
+[[1;33mWARNING[m] [path] bad path element "/home/anagha/.m2/repository/org/apache/derby/derbyclient/10.11.1.1/derbyLocale_zh_TW.jar": no such file or directory
+[[1;33mWARNING[m] No SupportedSourceVersion annotation found on org.apache.struts.annotations.taglib.apt.TagAnnotationProcessor, returning RELEASE_6.
+[[1;33mWARNING[m] Supported source version 'RELEASE_6' from annotation processor 'org.apache.struts.annotations.taglib.apt.TagAnnotationProcessor' less than -source '11'
+[[1;33mWARNING[m] No processor claimed any of these annotations: /org.junit.jupiter.api.Test,/org.junit.jupiter.api.BeforeEach,/org.junit.jupiter.api.TestMethodOrder,/org.junit.jupiter.api.AfterEach,/org.mockito.Mock,/org.junit.jupiter.api.DisplayName,/org.junit.jupiter.api.io.TempDir,/org.junit.jupiter.api.Disabled
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[184,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[185,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[186,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[188,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[189,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[190,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[203,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[204,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[205,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[207,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[208,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[209,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[221,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[222,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[223,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[225,31] [deprecation] getRoles(User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[226,26] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/UserTest.java:[227,27] [deprecation] hasRole(String,User) in UserManager has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/ui/core/filters/LoadSaltFilterTest.java:[39,26] [deprecation] initMocks(Object) in MockitoAnnotations has been deprecated
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/ui/core/filters/LoadSaltFilterTest.java:[77,19] [serial] serializable class TestUser has no definition of serialVersionUID
+[[1;33mWARNING[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/ui/core/filters/ValidateSaltFilterTest.java:[167,19] [serial] serializable class TestUser has no definition of serialVersionUID
+[[1;34mINFO[m] 51 warnings 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] COMPILATION ERROR : 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[393,17] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[395,17] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[397,17] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[76,22] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[77,22] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[81,22] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[89,22] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[90,22] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[94,22] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[102,22] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[103,22] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[107,22] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[104,17] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[105,17] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[164,14] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[169,14] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[170,58] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[170,14] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[171,32] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[174,14] error: cannot find symbol
+  symbol:   method setStatus(PubStatus)
+  location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[175,58] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[175,14] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[176,32] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[179,55] error: cannot find symbol
+  symbol:   method getPubTime()
+  location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[179,14] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable entry4 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[180,55] error: cannot find symbol
+  symbol:   method getPubTime()
+  location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[180,14] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable entry5 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[187,36] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[188,36] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[189,36] error: cannot find symbol
+  symbol:   method getUpdateTime()
+  location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[235,33] error: cannot find symbol
+  symbol:   method getPubTime()
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[236,31] error: cannot find symbol
+  symbol:   method getPubTime()
+  location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[358,21] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[360,21] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[949,17] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[950,17] error: cannot find symbol
+  symbol:   method setUpdateTime(Timestamp)
+  location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/search/IndexManagerTest.java:[119,22] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: class WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/search/IndexManagerTest.java:[128,22] error: cannot find symbol
+  symbol:   method setPubTime(Timestamp)
+  location: class WeblogEntry
+[[1;34mINFO[m] 38 errors 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  8.375 s
+[[1;34mINFO[m] Finished at: 2026-02-09T15:00:57+05:30
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.apache.maven.plugins:maven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m on project [36mroller-webapp[m: [1;31mCompilation failure[m: Compilation failure: 
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[393,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[395,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/TestUtils.java:[397,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[76,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[77,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[81,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable testEntry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[89,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[90,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[94,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable testEntry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[102,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[103,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/PlanetManagerLocalTest.java:[107,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable testEntry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[104,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[105,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[164,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[169,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[170,58] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[170,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[171,32] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[174,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setStatus(PubStatus)
+[[1;31mERROR[m]   location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[175,58] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[175,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[176,32] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[179,55] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getPubTime()
+[[1;31mERROR[m]   location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[179,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable entry4 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[180,55] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getPubTime()
+[[1;31mERROR[m]   location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[180,14] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable entry5 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[187,36] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry1 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[188,36] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[189,36] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getUpdateTime()
+[[1;31mERROR[m]   location: variable entry3 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[235,33] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getPubTime()
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[236,31] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method getPubTime()
+[[1;31mERROR[m]   location: variable entry2 of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[358,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[360,21] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[949,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/WeblogEntryTest.java:[950,17] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setUpdateTime(Timestamp)
+[[1;31mERROR[m]   location: variable testEntry of type WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/search/IndexManagerTest.java:[119,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: class WeblogEntry
+[[1;31mERROR[m] /home/anagha/SE/project-1-team-3/app/src/test/java/org/apache/roller/weblogger/business/search/IndexManagerTest.java:[128,22] error: cannot find symbol
+[[1;31mERROR[m]   symbol:   method setPubTime(Timestamp)
+[[1;31mERROR[m]   location: class WeblogEntry
+[[1;31mERROR[m] -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

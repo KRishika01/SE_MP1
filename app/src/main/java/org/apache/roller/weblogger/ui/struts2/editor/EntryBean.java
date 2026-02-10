@@ -25,6 +25,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.support.WeblogEntryCommentSupport;
+import org.apache.roller.weblogger.business.support.WeblogEntryTagSupport;
 import org.apache.roller.weblogger.pojos.WeblogCategory;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
@@ -297,7 +299,7 @@ public class EntryBean {
         entry.setLocale(getLocale());
         entry.setSummary(getSummary());
         entry.setText(getText());
-        entry.setTagsAsString(Utilities.replaceNonAlphanumeric(getTagsAsString(), ' '));
+        WeblogEntryTagSupport.setTagsAsString(entry, Utilities.replaceNonAlphanumeric(getTagsAsString(), ' '));
         entry.setSearchDescription(getSearchDescription());
         
         // figure out the category selected
@@ -345,11 +347,11 @@ public class EntryBean {
         setSummary(entry.getSummary());
         setText(entry.getText());
         setCategoryId(entry.getCategory().getId());
-        setTagsAsString(entry.getTagsAsString());
+        setTagsAsString(WeblogEntryTagSupport.getTagsAsString(entry));
         setSearchDescription(entry.getSearchDescription());
         
         // set comment count, ignoreSpam=false, approvedOnly=false
-        setCommentCount(entry.getComments(false, false).size());
+        setCommentCount(WeblogEntryCommentSupport.getComments(entry, false, false).size());
         
         // init plugins values
         if(entry.getPlugins() != null) {

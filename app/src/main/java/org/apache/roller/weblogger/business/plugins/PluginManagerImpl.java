@@ -31,6 +31,8 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.roller.weblogger.WebloggerException;
+import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
+import org.apache.roller.weblogger.business.support.WeblogEntryRenderSupport;
 import org.apache.roller.weblogger.business.plugins.comment.WeblogEntryCommentPlugin;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.util.HTMLSanitizer;
@@ -94,7 +96,7 @@ public class PluginManagerImpl implements PluginManager {
     public String applyWeblogEntryPlugins(Map<String, WeblogEntryPlugin> pagePlugins, WeblogEntry entry, String str) {
 
         String ret = str;
-        List<String> plugins = entry.getPluginsList();
+        List<String> plugins = WeblogEntryRenderSupport.getPluginsList(entry);
 
         for (String key : plugins) {
             WeblogEntryPlugin pagePlugin = pagePlugins.get(key);

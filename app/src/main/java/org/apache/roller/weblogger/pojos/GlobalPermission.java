@@ -26,6 +26,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.RoleManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.util.Utilities;
 
@@ -55,7 +56,7 @@ public class GlobalPermission extends RollerPermission {
         super("GlobalPermission user: " + user.getUserName());
         
         // loop through user's roles, adding actions implied by each
-        List<String> roles = WebloggerFactory.getWeblogger().getUserManager().getRoles(user);
+        List<String> roles = WebloggerFactory.getWeblogger().getRoleManager().getRoles(user);
         List<String> actionsList = new ArrayList<>();
         for (String role : roles) {
             String impliedActions = WebloggerConfig.getProperty("role.action." + role);
