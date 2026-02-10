@@ -982,6 +982,7 @@ def commit_and_push(repo, branch_name):
 # ---------------- CREATE PR ----------------
 def create_pr(branch_name, updated_files, smell_report):
     # g = Github(GITHUB_TOKEN)
+    from github import Github, Auth
     g = Github(auth=Auth.Token(GITHUB_TOKEN))
     repo = g.get_repo(REPO_NAME)
 
@@ -1040,4 +1041,5 @@ def run_pipeline():
 
 if __name__ == "__main__":
     run_pipeline()
+
 
