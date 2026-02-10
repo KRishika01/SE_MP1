@@ -22,9 +22,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.business.pings.AutoPingManager;
-import org.apache.roller.weblogger.business.pings.PingTargetManager;
-import org.apache.roller.weblogger.config.WebloggerConfig;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -39,28 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.roller.weblogger.business.MediaFileManager;
-import org.apache.roller.weblogger.business.UserManager;
-import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.business.Weblogger;
-import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.pojos.AutoPing;
 import org.apache.roller.weblogger.pojos.CustomTemplateRendition;
-import org.apache.roller.weblogger.pojos.PingQueueEntry;
-import org.apache.roller.weblogger.pojos.PingTarget;
 import org.apache.roller.weblogger.pojos.StatCount;
 import org.apache.roller.weblogger.pojos.StatCountCountComparator;
-import org.apache.roller.weblogger.pojos.TagStat;
 import org.apache.roller.weblogger.pojos.ThemeTemplate.ComponentType;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
-import org.apache.roller.weblogger.pojos.WeblogBookmark;
-import org.apache.roller.weblogger.pojos.WeblogBookmarkFolder;
-import org.apache.roller.weblogger.pojos.WeblogCategory;
-import org.apache.roller.weblogger.pojos.WeblogEntry;
-import org.apache.roller.weblogger.pojos.WeblogEntryTag;
-import org.apache.roller.weblogger.pojos.WeblogEntryTagAggregate;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.pojos.WeblogTemplate;
 
@@ -79,17 +62,23 @@ public class JPAWeblogManagerImpl implements WeblogManager {
     
     private final Weblogger roller;
     private final JPAPersistenceStrategy strategy;
+
+    // New collaborators to improve modularization
+    private final WeblogLifecycleService lifecycleService;
+    private final WeblogTemplateService templateService;
     
     // cached mapping of weblogHandles -> weblogIds
-    private final Map<String, String> weblogHandleToIdMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, String> weblogHandleToIdMap =
+            Collections.synchronizedMap(new HashMap<>());
 
     @com.google.inject.Inject
     protected JPAWeblogManagerImpl(Weblogger roller, JPAPersistenceStrategy strat) {
         log.debug("Instantiating JPA Weblog Manager");
         this.roller = roller;
         this.strategy = strat;
+        this.lifecycleService = new WeblogLifecycleService(roller, strat);
+        this.templateService = new WeblogTemplateService(roller, strat);
     }
-    
     
     @Override
     public void release() {}
@@ -100,252 +89,43 @@ public class JPAWeblogManagerImpl implements WeblogManager {
      */
     @Override
     public void saveWeblog(Weblog weblog) throws WebloggerException {
-        
         weblog.setLastModified(new java.util.Date());
         strategy.store(weblog);
     }
     
     @Override
     public void removeWeblog(Weblog weblog) throws WebloggerException {
-        
         // remove contents first, then remove weblog
-        this.removeWeblogContents(weblog);
+        this.lifecycleService.removeWeblogContents(weblog);
         this.strategy.remove(weblog);
         
         // remove entry from cache mapping
         this.weblogHandleToIdMap.remove(weblog.getHandle());
     }
-    
+
     /**
-     * convenience method for removing contents of a weblog.
-     * TODO BACKEND: use manager methods instead of queries here
-     */
-    private void removeWeblogContents(Weblog weblog)
-    throws  WebloggerException {
-        
-        UserManager        umgr = roller.getUserManager();
-        WeblogEntryManager emgr = roller.getWeblogEntryManager();
-
-        // remove tags
-        TypedQuery<WeblogEntryTag> tagQuery = strategy.getNamedQuery("WeblogEntryTag.getByWeblog",
-                WeblogEntryTag.class);
-        tagQuery.setParameter(1, weblog);
-        List<WeblogEntryTag> results = tagQuery.getResultList();
-        
-        for (WeblogEntryTag tagData : results) {
-            if (tagData.getWeblogEntry() != null) {
-                tagData.getWeblogEntry().getTags().remove(tagData);
-            }
-            this.strategy.remove(tagData);
-        }
-        
-        // remove site tag aggregates
-        List<TagStat> tags = emgr.getTags(weblog, null, null, 0, -1);
-        updateTagAggregates(tags);
-        
-        // delete all weblog tag aggregates
-        Query removeAggs= strategy.getNamedUpdate(
-                "WeblogEntryTagAggregate.removeByWeblog");
-        removeAggs.setParameter(1, weblog);
-        removeAggs.executeUpdate();
-        
-        // delete all bad counts
-        Query removeCounts = strategy.getNamedUpdate(
-                "WeblogEntryTagAggregate.removeByTotalLessEqual");
-        removeCounts.setParameter(1, 0);
-        removeCounts.executeUpdate();
-        
-        // Remove the weblog's ping queue entries
-        TypedQuery<PingQueueEntry> q = strategy.getNamedQuery("PingQueueEntry.getByWebsite", PingQueueEntry.class);
-        q.setParameter(1, weblog);
-        List<PingQueueEntry> queueEntries = q.getResultList();
-        for (Object obj : queueEntries) {
-            this.strategy.remove(obj);
-        }
-        
-        // Remove the weblog's auto ping configurations
-        AutoPingManager autoPingMgr = roller.getAutopingManager();
-        List<AutoPing> autopings = autoPingMgr.getAutoPingsByWebsite(weblog);
-        for (AutoPing autoPing : autopings) {
-            this.strategy.remove(autoPing);
-        }
-        
-        // remove associated templates
-        TypedQuery<WeblogTemplate> templateQuery = strategy.getNamedQuery("WeblogTemplate.getByWeblog",
-                WeblogTemplate.class);
-        templateQuery.setParameter(1, weblog);
-        List<WeblogTemplate> templates = templateQuery.getResultList();
-
-        for (WeblogTemplate template : templates) {
-            this.strategy.remove(template);
-        }
-        
-        // remove folders (including bookmarks)
-        TypedQuery<WeblogBookmarkFolder> folderQuery = strategy.getNamedQuery("WeblogBookmarkFolder.getByWebsite",
-                WeblogBookmarkFolder.class);
-        folderQuery.setParameter(1, weblog);
-        List<WeblogBookmarkFolder> folders = folderQuery.getResultList();
-        for (WeblogBookmarkFolder wbf : folders) {
-            this.strategy.remove(wbf);
-        }
-
-        // remove mediafile metadata
-        // remove uploaded files
-        MediaFileManager mfmgr = WebloggerFactory.getWeblogger().getMediaFileManager();
-        mfmgr.removeAllFiles(weblog);
-        //List<MediaFileDirectory> dirs = mmgr.getMediaFileDirectories(weblog);
-        //for (MediaFileDirectory dir : dirs) {
-            //this.strategy.remove(dir);
-        //}
-        this.strategy.flush();
-
-        // remove entries
-        TypedQuery<WeblogEntry> refQuery = strategy.getNamedQuery("WeblogEntry.getByWebsite", WeblogEntry.class);
-        refQuery.setParameter(1, weblog);
-        List<WeblogEntry> entries = refQuery.getResultList();
-        for (WeblogEntry entry : entries) {
-            emgr.removeWeblogEntry(entry);
-        }
-        this.strategy.flush();
-        
-        // delete all weblog categories
-        Query removeCategories= strategy.getNamedUpdate("WeblogCategory.removeByWeblog");
-        removeCategories.setParameter(1, weblog);
-        removeCategories.executeUpdate();
-
-        // remove permissions
-        for (WeblogPermission perm : umgr.getWeblogPermissions(weblog)) {
-            umgr.revokeWeblogPermission(perm.getWeblog(), perm.getUser(), WeblogPermission.ALL_ACTIONS);
-        }
-        
-        // flush the changes before returning. This is required as there is a
-        // circular dependency between WeblogCategory and Weblog
-        this.strategy.flush();        
-    }
-    
-    protected void updateTagAggregates(List<TagStat> tags) throws WebloggerException {
-        for (TagStat stat : tags) {
-            TypedQuery<WeblogEntryTagAggregate> query = strategy.getNamedQueryCommitFirst(
-                    "WeblogEntryTagAggregate.getByName&WebsiteNullOrderByLastUsedDesc", WeblogEntryTagAggregate.class);
-            query.setParameter(1, stat.getName());
-            try {
-                WeblogEntryTagAggregate agg = query.getSingleResult();
-                agg.setTotal(agg.getTotal() - stat.getCount());
-            } catch (NoResultException ignored) {
-                // nothing to update
-            }
-        }
-    }
-    
-    /**
-     * @see org.apache.roller.weblogger.business.WeblogManager#saveTemplate(WeblogTemplate)
+     * Store a custom weblog template.
      */
     @Override
     public void saveTemplate(WeblogTemplate template) throws WebloggerException {
-        this.strategy.store(template);
-        
-        // update weblog last modified date.  date updated by saveWeblog()
-        roller.getWeblogManager().saveWeblog(template.getWeblog());
+        this.templateService.saveTemplate(template);
     }
 
     @Override
     public void saveTemplateRendition(CustomTemplateRendition rendition) throws WebloggerException {
-        this.strategy.store(rendition);
-
-        // update weblog last modified date.  date updated by saveWeblog()
-        roller.getWeblogManager().saveWeblog(rendition.getWeblogTemplate().getWeblog());
+        this.templateService.saveTemplateRendition(rendition);
     }
     
     @Override
     public void removeTemplate(WeblogTemplate template) throws WebloggerException {
-        this.strategy.remove(template);
-        // update weblog last modified date.  date updated by saveWeblog()
-        roller.getWeblogManager().saveWeblog(template.getWeblog());
+        this.templateService.removeTemplate(template);
     }
     
     @Override
     public void addWeblog(Weblog newWeblog) throws WebloggerException {
         this.strategy.store(newWeblog);
         this.strategy.flush();
-        this.addWeblogContents(newWeblog);
-    }
-    
-    private void addWeblogContents(Weblog newWeblog)
-    throws WebloggerException {
-        
-        // grant weblog creator ADMIN permission
-        List<String> actions = new ArrayList<>();
-        actions.add(WeblogPermission.ADMIN);
-        roller.getUserManager().grantWeblogPermission(
-                newWeblog, newWeblog.getCreator(), actions);
-        
-        String cats = WebloggerConfig.getProperty("newuser.categories");
-        WeblogCategory firstCat = null;
-        if (cats != null) {
-            String[] splitcats = cats.split(",");
-            for (String split : splitcats) {
-                if (split.isBlank()) {
-                    continue;
-                }
-                WeblogCategory c = new WeblogCategory(
-                        newWeblog,
-                        split,
-                        null,
-                        null );
-                if (firstCat == null) {
-                    firstCat = c;
-                }
-                this.strategy.store(c);
-            }
-        }
-
-        // Use first category as default for Blogger API
-        if (firstCat != null) {
-            newWeblog.setBloggerCategory(firstCat);
-        }
-
-        this.strategy.store(newWeblog);
-
-        // add default bookmarks
-        WeblogBookmarkFolder defaultFolder = new WeblogBookmarkFolder(
-                "default", newWeblog);
-        this.strategy.store(defaultFolder);
-        
-        String blogroll = WebloggerConfig.getProperty("newuser.blogroll");
-        if (blogroll != null) {
-            String[] splitroll = blogroll.split(",");
-            for (String splitItem : splitroll) {
-                String[] rollitems = splitItem.split("\\|");
-                if (rollitems.length > 1) {
-                    WeblogBookmark b = new WeblogBookmark(
-                            defaultFolder,
-                            rollitems[0],
-                            "",
-                            rollitems[1].trim(),
-                            null,
-                            null);
-                    this.strategy.store(b);
-                }
-            }
-        }
-
-        roller.getMediaFileManager().createDefaultMediaFileDirectory(newWeblog);
-
-        // flush so that all data up to this point can be available in db
-        this.strategy.flush();
-
-        // add any auto enabled ping targets
-        PingTargetManager pingTargetMgr = roller.getPingTargetManager();
-        AutoPingManager autoPingMgr = roller.getAutopingManager();
-        
-        for (PingTarget pingTarget : pingTargetMgr.getCommonPingTargets()) {
-            if(pingTarget.isAutoEnabled()) {
-                AutoPing autoPing = new AutoPing(
-                        null, pingTarget, newWeblog);
-                autoPingMgr.saveAutoPing(autoPing);
-            }
-        }
-
+        this.lifecycleService.addWeblogContents(newWeblog);
     }
     
     @Override
@@ -419,8 +199,6 @@ public class JPAWeblogManagerImpl implements WeblogManager {
             Boolean enabled, Boolean active,
             Date startDate, Date endDate, int offset, int length) throws WebloggerException {
         
-        //if (endDate == null) endDate = new Date();
-                      
         List<Object> params = new ArrayList<>();
         int size = 0;
         String queryString;
@@ -461,7 +239,8 @@ public class JPAWeblogManagerImpl implements WeblogManager {
                 
         whereClause.append(" ORDER BY w.dateCreated DESC");
         
-        TypedQuery<Weblog> query = strategy.getDynamicQuery(queryString + whereClause.toString(), Weblog.class);
+        TypedQuery<Weblog> query = strategy.getDynamicQuery(
+                queryString + whereClause.toString(), Weblog.class);
         if (offset != 0) {
             query.setFirstResult(offset);
         }
@@ -510,12 +289,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
 
     @Override
     public WeblogTemplate getTemplate(String id) throws WebloggerException {
-        // Don't hit database for templates stored on disk
-        if (id != null && id.endsWith(".vm")) {
-            return null;
-        }
-        
-        return (WeblogTemplate)this.strategy.load(WeblogTemplate.class,id);
+        return this.templateService.getTemplate(id);
     }
     
     /**
@@ -524,24 +298,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
     @Override
     public WeblogTemplate getTemplateByLink(Weblog weblog, String templateLink)
     throws WebloggerException {
-        
-        if (weblog == null) {
-            throw new WebloggerException("userName is null");
-        }
-
-        if (templateLink == null) {
-            throw new WebloggerException("templateLink is null");
-        }
-
-        TypedQuery<WeblogTemplate> query = strategy.getNamedQuery("WeblogTemplate.getByWeblog&Link",
-                WeblogTemplate.class);
-        query.setParameter(1, weblog);
-        query.setParameter(2, templateLink);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+        return this.templateService.getTemplateByLink(weblog, templateLink);
     }
     
     /**
@@ -550,24 +307,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
     @Override
     public WeblogTemplate getTemplateByAction(Weblog weblog, ComponentType action)
             throws WebloggerException {
-        
-        if (weblog == null) {
-            throw new WebloggerException("weblog is null");
-        }
-
-        if (action == null) {
-            throw new WebloggerException("Action name is null");
-        }
-        
-        TypedQuery<WeblogTemplate> query = strategy.getNamedQuery("WeblogTemplate.getByAction",
-                WeblogTemplate.class);
-        query.setParameter(1, weblog);
-        query.setParameter(2, action);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }        
+        return this.templateService.getTemplateByAction(weblog, action);
     }
     
     /**
@@ -576,24 +316,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
     @Override
     public WeblogTemplate getTemplateByName(Weblog weblog, String templateName)
     throws WebloggerException {
-        
-        if (weblog == null) {
-            throw new WebloggerException("weblog is null");
-        }
-        
-        if (templateName == null) {
-            throw new WebloggerException("Template name is null");
-        }
-        
-        TypedQuery<WeblogTemplate> query = strategy.getNamedQuery("WeblogTemplate.getByWeblog&Name",
-                WeblogTemplate.class);
-        query.setParameter(1, weblog);
-        query.setParameter(2, templateName);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+        return this.templateService.getTemplateByName(weblog, templateName);
     }
 
     /**
@@ -601,13 +324,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
      */
     @Override
     public List<WeblogTemplate> getTemplates(Weblog weblog) throws WebloggerException {
-        if (weblog == null) {
-            throw new WebloggerException("weblog is null");
-        }
-        TypedQuery<WeblogTemplate> q = strategy.getNamedQuery(
-                "WeblogTemplate.getByWeblogOrderByName", WeblogTemplate.class);
-        q.setParameter(1, weblog);
-        return q.getResultList();
+        return this.templateService.getTemplates(weblog);
     }
 
     
@@ -682,7 +399,7 @@ public class JPAWeblogManagerImpl implements WeblogManager {
                         (String)row[2],                     // weblog handle
                         (String)row[3],                     // weblog name
                         "statCount.weblogCommentCountType", // stat type
-                        ((Long)row[0]));        // # comments
+                        ((Long)row[0]));                    // # comments
                 sc.setWeblogHandle((String)row[2]);
                 results.add(sc);
             }
