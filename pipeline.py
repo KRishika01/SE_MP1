@@ -884,6 +884,21 @@ Code:
         temperature=0
     )
     return response.choices[0].message.content
+def split_code_into_chunks(code, max_chars=12000):
+    lines = code.split("\n")
+    chunks = []
+    current = []
+
+    for line in lines:
+        current.append(line)
+        if sum(len(l) for l in current) > max_chars:
+            chunks.append("\n".join(current))
+            current = []
+
+    if current:
+        chunks.append("\n".join(current))
+
+    return chunks
 
 # ---------------- JSON PARSER ----------------
 def parse_mistral_response(text):
@@ -934,10 +949,32 @@ def process_files():
                 print("Analyzing:", path)
 
                 try:
-                    result = analyze_code(code)
-                    data = parse_mistral_response(result)
-                    smells = data.get("smells", [])
-                    new_code = data.get("refactored_code", code)
+                    if len(code) > 12000:
+                        print("Large file detected, chunking:", path)
+                        chunks = split_code_into_chunks(code)
+                        new_chunks = []
+                        file_smells = []
+
+                        for chunk in chunks:
+                            result = analyze_code(chunk)
+                            data = parse_mistral_response(result)
+
+                            new_chunks.append(data.get("refactored_code", chunk))
+                            file_smells.extend(data.get("smells", []))
+
+                        new_code = "\n".join(new_chunks)
+                        smells = file_smells
+                    else:
+                        result = analyze_code(code)
+                        data = parse_mistral_response(result)
+                        smells = data.get("smells", [])
+                        new_code = data.get("refactored_code", code)
+
+                    # result = analyze_code(code)
+                    # data = parse_mistral_response(result)
+                    # smells = data.get("smells", [])
+                    # new_code = data.get("refactored_code", code)
+                    
 
                     if smells:
                         smell_report[path] = smells
@@ -1041,5 +1078,6 @@ def run_pipeline():
 
 if __name__ == "__main__":
     run_pipeline()
+
 
 
