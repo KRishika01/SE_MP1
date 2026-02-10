@@ -58,9 +58,9 @@ public class RemoveWebsiteIndexOperation extends WriteToIndexOperation {
      * @param website
      *            The website to rebuild the index for, or null for all sites.
      */
-    public RemoveWebsiteIndexOperation(Weblogger roller, LuceneIndexManager mgr,
+    public RemoveWebsiteIndexOperation(Weblogger roller,IndexResourceProvider resourceProvider,
             Weblog website) {
-        super(mgr);
+        super(resourceProvider);
         this.roller = roller;
         this.website = website;
     }

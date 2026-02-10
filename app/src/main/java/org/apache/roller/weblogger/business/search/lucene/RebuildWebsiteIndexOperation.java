@@ -63,9 +63,9 @@ public class RebuildWebsiteIndexOperation extends WriteToIndexOperation {
      * @param website
      *            The website to rebuild the index for, or null for all users.
      */
-    public RebuildWebsiteIndexOperation(Weblogger roller, LuceneIndexManager mgr,
+    public RebuildWebsiteIndexOperation(Weblogger roller, IndexResourceProvider resourceProvider,
             Weblog website) {
-        super(mgr);
+        super(resourceProvider);
         this.roller = roller;
         this.website = website;
     }
