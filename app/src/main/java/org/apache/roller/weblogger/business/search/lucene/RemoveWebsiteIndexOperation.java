@@ -90,7 +90,7 @@ public class RemoveWebsiteIndexOperation extends WriteToIndexOperation {
                 if (website != null) {
                     handle = website.getHandle();
                 }
-                Term tHandle = LuceneIndexManager.getTerm(FieldConstants.WEBSITE_HANDLE,
+                Term tHandle = resourceProvider.getTerm(FieldConstants.WEBSITE_HANDLE,
                         handle);
 
                 if (tHandle != null) {

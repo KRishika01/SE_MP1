@@ -55,7 +55,7 @@ public class AddEntryOperation extends WriteToIndexOperation {
     //     this.data = data;
     // }
     public AddEntryOperation(Weblogger roller, IndexResourceProvider resourceProvider, WeblogEntry data) {
-        super(resourceProvider);  // NEW - accepts interface
+        super(resourceProvider);  
         this.roller = roller;
         this.data = data;
     }

@@ -19,7 +19,9 @@
 package org.apache.roller.weblogger.business.search.lucene;
 
 import java.util.concurrent.locks.ReadWriteLock;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 
 /**
@@ -61,4 +63,21 @@ public interface IndexResourceProvider {
      * Should be called after write operations to ensure readers see updates.
      */
     void resetSharedReader();
+    
+    /**
+     * Gets the analyzer used for text tokenization.
+     * 
+     * @return Analyzer instance
+     */
+    Analyzer getAnalyzer();
+    
+    /**
+     * Creates a Term object with the given field and value.
+     * Returns null if value is null or empty.
+     * 
+     * @param field the field name
+     * @param value the field value
+     * @return Term object or null
+     */
+    Term getTerm(String field, String value);
 }
