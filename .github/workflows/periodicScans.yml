@@ -1,0 +1,40 @@
+name: Periodic Design Smell Scan
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # Runs every hour
+  workflow_dispatch:       # Allows manual run from GitHub UI
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: SE-MP1
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # fetch all commits & branches
+          ref: ${{ secrets.BASE_BRANCH }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install PyGithub requests mistralai GitPython dotenv
+
+      - name: Run pipeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          REPO_URL: ${{secrets.REPO_URL}}
+          REPO_NAME: ${{secrets.REPO_NAME}}
+          BASE_BRANCH: ${{secrets.BASE_BRANCH}}
+          
+        run: |
+          python pipeline.py

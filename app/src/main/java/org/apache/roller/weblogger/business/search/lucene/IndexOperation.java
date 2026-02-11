@@ -1,22 +1,24 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  The ASF licenses this file to You
- * under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.  For additional information regarding
- * copyright in this work, please see the NOTICE file in the top level
- * directory of this distribution.
- */
+// /*
+//  * Licensed to the Apache Software Foundation (ASF) under one or more
+//  *  contributor license agreements.  The ASF licenses this file to You
+//  * under the Apache License, Version 2.0 (the "License"); you may not
+//  * use this file except in compliance with the License.
+//  * You may obtain a copy of the License at
+//  *
+//  *     http://www.apache.org/licenses/LICENSE-2.0
+//  *
+//  * Unless required by applicable law or agreed to in writing, software
+//  * distributed under the License is distributed on an "AS IS" BASIS,
+//  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  * See the License for the specific language governing permissions and
+//  * limitations under the License.  For additional information regarding
+//  * copyright in this work, please see the NOTICE file in the top level
+//  * directory of this distribution.
+//  */
 
-/* Created on Jul 16, 2003 */
+// /* Created on Jul 16, 2003 */
+
+
 
 package org.apache.roller.weblogger.business.search.lucene;
 
@@ -43,11 +45,11 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 
 /**
- * This is the base class for all index operation. These operations include:<br>
- * SearchOperation<br>
- * AddWeblogOperation<br>
- * RemoveWeblogOperation<br>
- * RebuildUserIndexOperation
+ * This is the base class for all index operations. These operations include:
+ * SearchOperation, AddWeblogOperation, RemoveWeblogOperation, RebuildUserIndexOperation
+ * 
+ * Refactored to depend on IndexResourceProvider interface instead of concrete
+ * LuceneIndexManager to break cyclic dependency.
  * 
  * @author Mindaugas Idzelis (min@idzelis.com)
  */
@@ -56,19 +58,20 @@ public abstract class IndexOperation implements Runnable {
     private static Log logger = LogFactory.getFactory().getInstance(
             IndexOperation.class);
 
-    // ~ Instance fields
-    // ========================================================
-    protected LuceneIndexManager manager;
+    // Changed from LuceneIndexManager to IndexResourceProvider interface
+    protected IndexResourceProvider resourceProvider;
     private IndexWriter writer;
 
-    // ~ Constructors
-    // ===========================================================
-    public IndexOperation(LuceneIndexManager manager) {
-        this.manager = manager;
+    /**
+     * Constructor accepting the resource provider interface.
+     * This breaks the cyclic dependency with LuceneIndexManager.
+     * 
+     * @param resourceProvider provider of index resources (reader, directory, locks)
+     */
+    public IndexOperation(IndexResourceProvider resourceProvider) {
+        this.resourceProvider = resourceProvider;
     }
 
-    // ~ Methods
-    // ================================================================
     protected Document getDocument(WeblogEntry data) {
 
         // Actual comment content is indexed only if search.index.comments
@@ -171,20 +174,22 @@ public abstract class IndexOperation implements Runnable {
     }
 
     /**
-     * Begin writing.
+     * Begin writing to the index.
      * 
      * @return the index writer
-     */
+    //  */
+ 
     protected IndexWriter beginWriting() {
         try {
-
+            // USE INTERFACE METHOD - NOT STATIC CALL
             LimitTokenCountAnalyzer analyzer = new LimitTokenCountAnalyzer(
-                    LuceneIndexManager.getAnalyzer(),
+                    resourceProvider.getAnalyzer(),  // ← Changed from LuceneIndexManager.getAnalyzer()
                     WebloggerConfig.getIntProperty("lucene.analyzer.maxTokenCount"));
 
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
-            writer = new IndexWriter(manager.getIndexDirectory(), config);
+            // Use interface method instead of concrete class
+            writer = new IndexWriter(resourceProvider.getIndexDirectory(), config);
 
         } catch (IOException e) {
             logger.error("ERROR creating writer", e);
@@ -194,7 +199,7 @@ public abstract class IndexOperation implements Runnable {
     }
 
     /**
-     * End writing.
+     * End writing to the index.
      */
     protected void endWriting() {
         if (writer != null) {
@@ -206,9 +211,6 @@ public abstract class IndexOperation implements Runnable {
         }
     }
 
-    /**
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         doRun();

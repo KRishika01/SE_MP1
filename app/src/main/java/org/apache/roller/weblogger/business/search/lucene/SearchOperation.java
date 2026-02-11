@@ -15,7 +15,7 @@
  * copyright in this work, please see the NOTICE file in the top level
  * directory of this distribution.
  */
-/* Created on Jul 18, 2003 */
+
 package org.apache.roller.weblogger.business.search.lucene;
 
 import java.io.IOException;
@@ -43,9 +43,6 @@ import org.apache.roller.weblogger.business.search.IndexManager;
  */
 public class SearchOperation extends ReadFromIndexOperation {
 
-    // ~ Static fields/initializers
-    // =============================================
-
     private static Log logger = LogFactory.getFactory().getInstance(
             SearchOperation.class);
 
@@ -58,9 +55,6 @@ public class SearchOperation extends ReadFromIndexOperation {
     private static final Sort SORTER = new Sort(new SortField(
             FieldConstants.PUBLISHED, SortField.Type.STRING, true));
 
-    // ~ Instance fields
-    // ========================================================
-
     private IndexSearcher searcher;
     private TopFieldDocs searchresults;
 
@@ -70,30 +64,19 @@ public class SearchOperation extends ReadFromIndexOperation {
     private String locale;
     private String parseError;
 
-    // ~ Constructors
-    // ===========================================================
-
     /**
      * Create a new operation that searches the index.
+     * Accepts IndexManager which implements IndexResourceProvider.
      */
     public SearchOperation(IndexManager mgr) {
-        // TODO: finish moving IndexManager to backend, so this cast is not
-        // needed
-        super((LuceneIndexManager) mgr);
+        // Cast to interface instead of concrete LuceneIndexManager
+        super((IndexResourceProvider) mgr);
     }
-
-    // ~ Methods
-    // ================================================================
 
     public void setTerm(String term) {
         this.term = term;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void doRun() {
         final int docLimit = 500;
@@ -101,19 +84,20 @@ public class SearchOperation extends ReadFromIndexOperation {
         searcher = null;
 
         try {
-            IndexReader reader = manager.getSharedIndexReader();
+            // Use interface method to get reader
+            IndexReader reader = resourceProvider.getSharedIndexReader();
             searcher = new IndexSearcher(reader);
 
+            // USE INTERFACE METHOD - NOT STATIC CALL
             MultiFieldQueryParser multiParser = new MultiFieldQueryParser(
-                    SEARCH_FIELDS, LuceneIndexManager.getAnalyzer());
+                    SEARCH_FIELDS, resourceProvider.getAnalyzer());  // ← Changed from LuceneIndexManager.getAnalyzer()
 
-            // Make it an AND by default. Comment this out for an or (default)
             multiParser.setDefaultOperator(MultiFieldQueryParser.Operator.AND);
 
-            // Create a query object out of our term
             Query query = multiParser.parse(term);
 
-            Term handleTerm = LuceneIndexManager.getTerm(FieldConstants.WEBSITE_HANDLE, weblogHandle);
+            // USE INTERFACE METHOD - NOT STATIC CALL
+            Term handleTerm = resourceProvider.getTerm(FieldConstants.WEBSITE_HANDLE, weblogHandle);  // ← Changed from LuceneIndexManager.getTerm()
             if (handleTerm != null) {
                 query = new BooleanQuery.Builder()
                     .add(query, BooleanClause.Occur.MUST)
@@ -129,7 +113,8 @@ public class SearchOperation extends ReadFromIndexOperation {
                     .build();
             }
 
-            Term localeTerm = LuceneIndexManager.getTerm(FieldConstants.LOCALE, locale);
+            // USE INTERFACE METHOD - NOT STATIC CALL
+            Term localeTerm = resourceProvider.getTerm(FieldConstants.LOCALE, locale);  // ← Changed from LuceneIndexManager.getTerm()
             if (localeTerm != null) {
                 query = new BooleanQuery.Builder()
                     .add(query, BooleanClause.Occur.MUST)
@@ -144,45 +129,22 @@ public class SearchOperation extends ReadFromIndexOperation {
             parseError = e.getMessage();
 
         } catch (ParseException e) {
-            // who cares?
             parseError = e.getMessage();
         }
-        // don't need to close the reader, since we didn't do any writing!
     }
 
-    /**
-     * Gets the searcher.
-     * 
-     * @return the searcher
-     */
     public IndexSearcher getSearcher() {
         return searcher;
     }
 
-    /**
-     * Sets the searcher.
-     * 
-     * @param searcher
-     *            the new searcher
-     */
     public void setSearcher(IndexSearcher searcher) {
         this.searcher = searcher;
     }
 
-    /**
-     * Gets the results.
-     * 
-     * @return the results
-     */
     public TopFieldDocs getResults() {
         return searchresults;
     }
 
-    /**
-     * Gets the results count.
-     * 
-     * @return the results count
-     */
     public int getResultsCount() {
         if (searchresults == null) {
             return -1;
@@ -190,43 +152,19 @@ public class SearchOperation extends ReadFromIndexOperation {
         return (int) searchresults.totalHits.value;
     }
 
-    /**
-     * Gets the parses the error.
-     *
-     * @return the parses the error
-     */
     public String getParseError() {
         return parseError;
     }
 
-    /**
-     * Sets the website handle.
-     * 
-     * @param weblogHandle
-     *            the new website handle
-     */
     public void setWeblogHandle(String weblogHandle) {
         this.weblogHandle = weblogHandle;
     }
 
-    /**
-     * Sets the category.
-     * 
-     * @param category
-     *            the new category
-     */
     public void setCategory(String category) {
         this.category = category;
     }
 
-    /**
-     * Sets the locale.
-     * 
-     * @param locale
-     *            the new locale
-     */
     public void setLocale(String locale) {
         this.locale = locale;
     }
-
 }

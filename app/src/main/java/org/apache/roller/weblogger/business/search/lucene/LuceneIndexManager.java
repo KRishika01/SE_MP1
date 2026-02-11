@@ -1,4 +1,3 @@
-
 package org.apache.roller.weblogger.business.search.lucene;
 
 import java.io.File;
@@ -30,6 +29,8 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
  * Refactored to delegate responsibilities to specialized components while
  * maintaining backward compatibility with existing tests and API consumers.
  * 
+ * Now implements IndexResourceProvider to break cyclic dependency with IndexOperation.
+ * 
  * Components:
  * - IndexLifecycleManager: handles initialization, consistency checks, shutdown
  * - IndexDirectoryManager: manages Lucene directories and index creation
@@ -42,7 +43,7 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
  * @author mraible (formatting and making indexDir configurable)
  */
 @com.google.inject.Singleton
-public class LuceneIndexManager implements IndexManager {
+public class LuceneIndexManager implements IndexManager, IndexResourceProvider {
 
     private static final Log logger = LogFactory.getLog(LuceneIndexManager.class);
 
@@ -202,7 +203,7 @@ public class LuceneIndexManager implements IndexManager {
             // Delegate to result converter (internal implementation)
             return resultConverter.convertHitsToEntryList(
                 hitsArr,
-                search,
+                search.getSearcher(),
                 pageNum,
                 entryCount,
                 weblogHandle,
@@ -213,48 +214,79 @@ public class LuceneIndexManager implements IndexManager {
         throw new WebloggerException("Error executing search");
     }
 
+    // ==================== IndexResourceProvider Implementation ====================
+    
     /**
      * Gets the read-write lock for thread-safe index operations.
-     * PUBLIC API - must remain for backward compatibility.
+     * Required by IndexResourceProvider interface.
      *
      * @return ReadWriteLock instance
      */
+    @Override
     public ReadWriteLock getReadWriteLock() {
         return rwl;
     }
 
+    /**
+     * Resets the shared reader, forcing it to be recreated.
+     * Required by IndexResourceProvider interface.
+     */
     @Override
-    public boolean isInconsistentAtStartup() {
-        // Delegate to lifecycle manager
-        return lifecycleManager.isInconsistentAtStartup();
+    public synchronized void resetSharedReader() {
+        readerManager.resetSharedReader();
     }
 
     /**
-     * Gets the analyzer used for tokenizing text.
-     * PUBLIC STATIC API - must remain for backward compatibility.
-     * 
-     * Delegates to AnalyzerFactory for actual implementation.
+     * Gets the shared IndexReader instance.
+     * Required by IndexResourceProvider interface.
+     *
+     * @return IndexReader instance
+     */
+    @Override
+    public synchronized IndexReader getSharedIndexReader() {
+        return readerManager.getSharedIndexReader();
+    }
+
+    /**
+     * Gets the index directory.
+     * Required by IndexResourceProvider interface.
+     *
+     * @return Directory instance
+     */
+    @Override
+    public Directory getIndexDirectory() {
+        return directoryManager.getIndexDirectory();
+    }
+
+    /**
+     * Gets the analyzer for the provider interface.
+     * Required by IndexResourceProvider to break cyclic dependency.
      * 
      * @return Analyzer instance
      */
-    public static Analyzer getAnalyzer() {
-        // Delegate to factory (internal implementation)
+    @Override
+    public Analyzer getAnalyzer() {
         return AnalyzerFactory.createAnalyzer();
     }
 
     /**
-     * Extracts a Lucene Term from the input text.
-     * PUBLIC STATIC API - must remain for backward compatibility.
+     * Creates a Term object with the given field and value.
+     * Required by IndexResourceProvider to break cyclic dependency.
      * 
-     * Delegates to TermExtractor for actual implementation.
-     *
      * @param field the field name
-     * @param input the input text
-     * @return Term object, or null if extraction fails
+     * @param value the field value
+     * @return Term object or null
      */
-    public static Term getTerm(String field, String input) {
-        // Delegate to extractor (internal implementation)
-        return TermExtractor.getTerm(field, input);
+    @Override
+    public Term getTerm(String field, String value) {
+        return TermExtractor.getTerm(field, value);
+    }
+    
+    // ==================== End IndexResourceProvider Implementation ====================
+
+    @Override
+    public boolean isInconsistentAtStartup() {
+        return lifecycleManager.isInconsistentAtStartup();
     }
 
     /**
@@ -285,43 +317,6 @@ public class LuceneIndexManager implements IndexManager {
         }
     }
 
-    /**
-     * Resets the shared reader, forcing it to be recreated.
-     * PUBLIC API - must remain for backward compatibility.
-     * 
-     * Delegates to IndexReaderManager.
-     */
-    public synchronized void resetSharedReader() {
-        // Delegate to reader manager
-        readerManager.resetSharedReader();
-    }
-
-    /**
-     * Gets the shared IndexReader instance.
-     * PUBLIC API - must remain for backward compatibility.
-     * 
-     * Delegates to IndexReaderManager.
-     *
-     * @return IndexReader instance
-     */
-    public synchronized IndexReader getSharedIndexReader() {
-        // Delegate to reader manager
-        return readerManager.getSharedIndexReader();
-    }
-
-    /**
-     * Gets the index directory.
-     * PUBLIC API - must remain for backward compatibility.
-     * 
-     * Delegates to IndexDirectoryManager.
-     *
-     * @return Directory instance
-     */
-    public Directory getIndexDirectory() {
-        // Delegate to directory manager
-        return directoryManager.getIndexDirectory();
-    }
-
     @Override
     public void release() {
         // No-op: kept for interface compatibility
@@ -329,7 +324,6 @@ public class LuceneIndexManager implements IndexManager {
 
     @Override
     public void shutdown() {
-        // Delegate to components
         lifecycleManager.shutdown();
         readerManager.shutdown();
     }

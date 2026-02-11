@@ -42,36 +42,25 @@ import org.apache.roller.weblogger.pojos.WeblogEntrySearchCriteria;
  */
 public class RebuildWebsiteIndexOperation extends WriteToIndexOperation {
 
-    // ~ Static fields/initializers
-    // =============================================
-
     private static Log logger = LogFactory.getFactory().getInstance(
             RebuildWebsiteIndexOperation.class);
-
-    // ~ Instance fields
-    // ========================================================
 
     private Weblog website;
     private Weblogger roller;
 
-    // ~ Constructors
-    // ===========================================================
-
     /**
      * Create a new operation that will recreate an index.
      * 
-     * @param website
-     *            The website to rebuild the index for, or null for all users.
+     * @param roller The weblogger instance
+     * @param resourceProvider The index resource provider
+     * @param website The website to rebuild the index for, or null for all users.
      */
-    public RebuildWebsiteIndexOperation(Weblogger roller, LuceneIndexManager mgr,
+    public RebuildWebsiteIndexOperation(Weblogger roller, IndexResourceProvider resourceProvider,
             Weblog website) {
-        super(mgr);
+        super(resourceProvider);
         this.roller = roller;
         this.website = website;
     }
-
-    // ~ Methods
-    // ================================================================
 
     @Override
     public void doRun() {
@@ -102,13 +91,15 @@ public class RebuildWebsiteIndexOperation extends WriteToIndexOperation {
                 // Delete Doc
                 Term tWebsite = null;
                 if (website != null) {
-                    tWebsite = LuceneIndexManager.getTerm(FieldConstants.WEBSITE_HANDLE,
+                    // USE INTERFACE METHOD - NOT STATIC CALL
+                    tWebsite = resourceProvider.getTerm(FieldConstants.WEBSITE_HANDLE,
                             website.getHandle());
                 }
                 if (tWebsite != null) {
                     writer.deleteDocuments(tWebsite);
                 } else {
-                    Term all = LuceneIndexManager.getTerm(FieldConstants.CONSTANT,
+                    // USE INTERFACE METHOD - NOT STATIC CALL
+                    Term all = resourceProvider.getTerm(FieldConstants.CONSTANT,
                             FieldConstants.CONSTANT_V);
                     writer.deleteDocuments(all);
                 }

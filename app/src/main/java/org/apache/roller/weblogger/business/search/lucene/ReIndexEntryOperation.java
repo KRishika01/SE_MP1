@@ -54,9 +54,9 @@ public class ReIndexEntryOperation extends WriteToIndexOperation {
     /**
      * Adds a web log entry into the index.
      */
-    public ReIndexEntryOperation(Weblogger roller, LuceneIndexManager mgr,
+    public ReIndexEntryOperation(Weblogger roller, IndexResourceProvider resourceProvider,
             WeblogEntry data) {
-        super(mgr);
+        super(resourceProvider);
         this.roller = roller;
         this.data = data;
     }
